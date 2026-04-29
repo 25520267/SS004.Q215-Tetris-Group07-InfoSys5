@@ -137,11 +137,10 @@ int removeLine() {
             
             draw();       // Vẽ lại bảng
             _sleep(200);  // Dừng 1 chút để tạo hiệu ứng ăn điểm
-            
+            linesCleared++;
         }
     }
-    
-    return 0; // Tạm thời trả về 0
+    return linesCleared; // Trả về tổng số hàng ăn được sau 1 lượt dọn dẹp
 }
 
 int main()
@@ -159,10 +158,16 @@ int main()
             if (c=='x' && canMove(0,1))  y++;
             if (c=='q') break;
         }
-        if (canMove(0,1)) y++;
+       if (canMove(0,1)) y++;
         else {
             block2Board();
-            removeLine();
+            
+            // Hứng kết quả số hàng ăn được để team của bạn xử lý tăng tốc độ
+            int score = removeLine(); 
+            if (score > 0) {
+                // Ghi chú cho đồng đội: "Chỗ này xử lý gọi hàm tăng tốc độ dựa trên biến score nhé!"
+            }
+            
             x = 5; y = 0; b = rand() % 7;
         }
         block2Board();
