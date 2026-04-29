@@ -102,7 +102,7 @@ void block2Board(){
 void initBoard(){
     for (int i = 0 ; i < H ; i++)
         for (int j = 0 ; j < W ; j++)
-            if ((i==H-1) || (j==0) || (j == W-1)) board[i][j] = '#';
+            if ((i == 0) || (i == H - 1) || (j == 0) || (j == W - 1)) board[i][j] = '#';
             else board[i][j] = ' ';
 }
 void draw(){
