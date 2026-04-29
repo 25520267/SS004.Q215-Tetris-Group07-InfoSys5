@@ -108,8 +108,19 @@ void initBoard(){
 void draw(){
     gotoxy(0,0);
     for (int i = 0 ; i < H ; i++, cout<<endl)
-        for (int j = 0 ; j < W ; j++)
-            cout<<board[i][j];
+        for (int j = 0 ; j < W ; j++){
+        if (board[i][j] == '#') {
+            setColor(8); 
+            if (i == 0 && j == 0) cout << "╔═";
+            else if (i == 0 && j == W - 1) cout << "╗ ";
+            else if (i == H - 1 && j == 0) cout << "╚═";
+            else if (i == H - 1 && j == W - 1) cout << "╝ ";
+            else if (i == 0 || i == H - 1) cout << "══";
+            else if (j == 0 || j == W - 1) cout << "║ ";
+        } else {
+            cout << board[i][j];
+        }
+    }
 }
 bool canMove(int dx, int dy){
     for (int i = 0 ; i < 4 ; i++)
