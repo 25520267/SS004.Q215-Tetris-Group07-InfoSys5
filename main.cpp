@@ -84,6 +84,9 @@ void hideCursor() {
     cursorInfo.bVisible = false;
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
 }
+void setColor(int color) {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
 void boardDelBlock(){
     for (int i = 0 ; i < 4 ; i++)
         for (int j = 0 ; j < 4 ; j++)
