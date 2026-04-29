@@ -124,6 +124,13 @@ void draw(){
             cout << "██"; 
         }
     }
+    setColor(11); 
+    gotoxy(W * 2 + 3, 2); cout << "╔════════════╗";
+    gotoxy(W * 2 + 3, 3); cout << "║   TETRIS   ║";
+    gotoxy(W * 2 + 3, 4); cout << "╠════════════╣";
+    gotoxy(W * 2 + 3, 5); cout << "║ SCORE: " << score << "\t ║";
+    gotoxy(W * 2 + 3, 6); cout << "╚════════════╝";
+    setColor(7);
 }
 bool canMove(int dx, int dy){
     for (int i = 0 ; i < 4 ; i++)
