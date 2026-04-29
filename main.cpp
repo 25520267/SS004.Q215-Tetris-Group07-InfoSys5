@@ -73,6 +73,7 @@ char blocks[][4][4] = {
 };
 
 int x=4,y=0,b=1;
+int score = 0;
 void gotoxy(int x, int y) {
     COORD c = {x, y};
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
