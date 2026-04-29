@@ -138,7 +138,7 @@ bool canMove(int dx, int dy){
             if (blocks[b][i][j] != ' '){
                 int tx = x + j + dx;
                 int ty = y + i + dy;
-                if ( tx<1 || tx >= W-1 || ty >= H-1) return false;
+                if (tx < 1 || tx >= W - 1 || ty >= H - 1 || ty < 1) return false;
                 if ( board[ty][tx] != ' ') return false;
             }
     return true;
