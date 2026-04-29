@@ -182,7 +182,7 @@ int main()
         else {
             block2Board();
             removeLine();
-            x = 5; y = 0; b = rand() % 7;
+            x = 5; y = 1; b = rand() % 7;
         }
         block2Board();
         draw();
