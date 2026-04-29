@@ -1,6 +1,7 @@
 #include <iostream>
 #include <conio.h>
 #include <windows.h>
+#include <time.h>
 using namespace std;
 #define H 20
 #define W 15
