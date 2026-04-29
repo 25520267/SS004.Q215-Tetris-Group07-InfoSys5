@@ -124,7 +124,21 @@ int removeLine() {
                 break; // Có ô trống -> Hàng này chưa đầy, bỏ qua
             }
         }
-
+        // Nếu j chạy tới W - 1 nghĩa là không có ô trống nào -> HÀNG ĐÃ ĐẦY
+        if (j == W - 1) {
+            // Vòng lặp dồn các hàng bên trên xuống 1 bậc
+            for (int ii = i; ii > 0; ii--) {
+                for (int col = 0; col < W - 1; col++) {
+                    board[ii][col] = board[ii - 1][col];
+                }
+            }
+            
+            i++; // Cực kỳ quan trọng: Kiểm tra lại chính hàng này sau khi gạch rơi xuống
+            
+            draw();       // Vẽ lại bảng
+            _sleep(200);  // Dừng 1 chút để tạo hiệu ứng ăn điểm
+            
+        }
     }
     
     return 0; // Tạm thời trả về 0
