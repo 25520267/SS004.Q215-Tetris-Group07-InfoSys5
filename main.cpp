@@ -183,6 +183,12 @@ int main()
             block2Board();
             removeLine();
             x = 5; y = 1; b = rand() % 7;
+            if (!canMove(0, 0)) {
+                gotoxy(W * 2 + 3, 8);
+                setColor(12);
+                cout << " GAME OVER! ";
+                break;
+            }
         }
         block2Board();
         draw();
