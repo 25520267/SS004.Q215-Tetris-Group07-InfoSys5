@@ -117,8 +117,11 @@ void draw(){
             else if (i == H - 1 && j == W - 1) cout << "╝ ";
             else if (i == 0 || i == H - 1) cout << "══";
             else if (j == 0 || j == W - 1) cout << "║ ";
+        } else if (board[i][j] == ' ') {
+            cout << "  "; 
         } else {
-            cout << board[i][j];
+            setColor(14); 
+            cout << "██"; 
         }
     }
 }
