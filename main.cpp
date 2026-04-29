@@ -139,6 +139,8 @@ void removeLine(){
 
 int main()
 {
+    SetConsoleOutputCP(CP_UTF8);
+    hideCursor();
     srand(time(0));
     b = rand() % 7;
     system("cls");
