@@ -1,6 +1,7 @@
 #include <iostream>
 #include <conio.h>
 #include <windows.h>
+#include <ctime>
 using namespace std;
 #define H 20
 #define W 15
@@ -112,6 +113,51 @@ bool canMove(int dx, int dy){
             }
     return true;
 }
+void copyBlock(char temp[4][4]) {
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            temp[i][j] = blocks[b][i][j];
+}
+
+void rotateTempBlock(char temp[4][4]) {
+    char rotated[4][4];
+
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            rotated[j][3 - i] = temp[i][j];
+
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            temp[i][j] = rotated[i][j];
+}
+
+bool canRotate(char temp[4][4]) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (temp[i][j] != ' ') {
+                int tx = x + j;
+                int ty = y + i;
+
+                if (tx < 1 || tx >= W - 1 || ty >= H - 1)
+                    return false;
+
+                if (board[ty][tx] != ' ')
+                    return false;
+            }
+        }
+    }
+    return true;
+}
+void rotateBlock() {
+    char temp[4][4];
+    copyBlock(temp);
+    rotateTempBlock(temp);
+    if (canRotate(temp)) {
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
+                blocks[b][i][j] = temp[i][j];
+    }
+}
 void removeLine(){
     int j;
     for (int i = H-2; i >0 ; i-- ){
@@ -126,7 +172,6 @@ void removeLine(){
         }
     }
 }
-
 int main()
 {
     srand(time(0));
@@ -140,6 +185,7 @@ int main()
             if (c=='a' && canMove(-1,0)) x--;
             if (c=='d' && canMove(1,0) ) x++;
             if (c=='x' && canMove(0,1))  y++;
+            if (c=='w') rotateBlock();
             if (c=='q') break;
         }
         if (canMove(0,1)) y++;
