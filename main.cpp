@@ -1,6 +1,7 @@
 #include <iostream>
 #include <conio.h>
 #include <windows.h>
+#include <time.h>
 using namespace std;
 #define H 20
 #define W 15
@@ -73,106 +74,150 @@ char blocks[][4][4] = {
 };
 
 int x=4,y=0,b=1;
+int score = 0;
+
 void gotoxy(int x, int y) {
     COORD c = {x, y};
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
 }
+
+void hideCursor() {
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+    cursorInfo.bVisible = false;
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+}
+
+void setColor(int color) {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
 void boardDelBlock(){
     for (int i = 0 ; i < 4 ; i++)
         for (int j = 0 ; j < 4 ; j++)
             if (blocks[b][i][j] != ' ' && y+j < H)
                 board[y+i][x+j] = ' ';
 }
+
 void block2Board(){
     for (int i = 0 ; i < 4 ; i++)
         for (int j = 0 ; j < 4 ; j++)
             if (blocks[b][i][j] != ' ' )
                 board[y+i][x+j] = blocks[b][i][j];
 }
+
 void initBoard(){
     for (int i = 0 ; i < H ; i++)
         for (int j = 0 ; j < W ; j++)
-            if ((i==H-1) || (j==0) || (j == W-1)) board[i][j] = '#';
+            if ((i == 0) || (i == H - 1) || (j == 0) || (j == W - 1)) board[i][j] = '#';
             else board[i][j] = ' ';
 }
+
 void draw(){
     gotoxy(0,0);
     for (int i = 0 ; i < H ; i++, cout<<endl)
-        for (int j = 0 ; j < W ; j++)
-            cout<<board[i][j];
+        for (int j = 0 ; j < W ; j++){
+        if (board[i][j] == '#') {
+            setColor(8); 
+            if (i == 0 && j == 0) cout << "╔═";
+            else if (i == 0 && j == W - 1) cout << "╗ ";
+            else if (i == H - 1 && j == 0) cout << "╚═";
+            else if (i == H - 1 && j == W - 1) cout << "╝ ";
+            else if (i == 0 || i == H - 1) cout << "══";
+            else if (j == 0 || j == W - 1) cout << "║ ";
+        } else if (board[i][j] == ' ') {
+            cout << "  "; 
+        } else {
+            setColor(14); 
+            cout << "██"; 
+        }
+    }
+    setColor(11); 
+    gotoxy(W * 2 + 3, 2); cout << "╔════════════╗";
+    gotoxy(W * 2 + 3, 3); cout << "║   TETRIS   ║";
+    gotoxy(W * 2 + 3, 4); cout << "╠════════════╣";
+    gotoxy(W * 2 + 3, 5); cout << "║ SCORE: " << score << "\t ║";
+    gotoxy(W * 2 + 3, 6); cout << "╚════════════╝";
+    setColor(7);
 }
+
 bool canMove(int dx, int dy){
     for (int i = 0 ; i < 4 ; i++)
         for (int j = 0 ; j < 4 ; j++)
             if (blocks[b][i][j] != ' '){
                 int tx = x + j + dx;
                 int ty = y + i + dy;
-                if ( tx<1 || tx >= W-1 || ty >= H-1) return false;
+                if (tx < 1 || tx >= W - 1 || ty >= H - 1 || ty < 1) return false;
                 if ( board[ty][tx] != ' ') return false;
             }
     return true;
 }
-int removeLine() {
-    int linesCleared = 0; // Biến đếm số hàng ăn được
 
-    // Quét từ dưới đáy màn hình (H-2) lên trên
+// Gộp logic đếm dòng của feature/remove-line và logic cộng điểm của main
+int removeLine() {
+    int linesCleared = 0; 
     for (int i = H - 2; i > 0; i--) {
-        int j;
-        // Quét từng ô trong hàng i để tìm khoảng trống
-        for (j = 0; j < W - 1; j++) {
-            if (board[i][j] == ' ') {
-                break; // Có ô trống -> Hàng này chưa đầy, bỏ qua
-            }
+        bool full = true;
+        for (int j = 1; j < W - 1; j++) {
+            if (board[i][j] == ' ') { full = false; break; }
         }
-        // Nếu j chạy tới W - 1 nghĩa là không có ô trống nào -> HÀNG ĐÃ ĐẦY
-        if (j == W - 1) {
-            // Vòng lặp dồn các hàng bên trên xuống 1 bậc
-            for (int ii = i; ii > 0; ii--) {
-                for (int col = 0; col < W - 1; col++) {
-                    board[ii][col] = board[ii - 1][col];
-                }
+        
+        if (full) {
+            score += 10; // Cập nhật điểm
+            linesCleared++; // Đếm số hàng ăn được
+            
+            for (int ii = i; ii > 1; ii--) {
+                for (int j = 1; j < W - 1; j++) board[ii][j] = board[ii - 1][j];
             }
-            
-            i++; // Cực kỳ quan trọng: Kiểm tra lại chính hàng này sau khi gạch rơi xuống
-            
-            draw();       // Vẽ lại bảng
-            _sleep(200);  // Dừng 1 chút để tạo hiệu ứng ăn điểm
-            linesCleared++;
+            i++;
+            draw();
+            Sleep(200);
         }
     }
-    return linesCleared; // Trả về tổng số hàng ăn được sau 1 lượt dọn dẹp
+    return linesCleared; 
 }
 
 int main()
 {
+    SetConsoleOutputCP(CP_UTF8);
+    hideCursor();
     srand(time(0));
     b = rand() % 7;
     system("cls");
     initBoard();
+    
     while (1){
         boardDelBlock();
         if (kbhit()){
             char c = getch();
             if (c=='a' && canMove(-1,0)) x--;
             if (c=='d' && canMove(1,0) ) x++;
-            if (c=='x' && canMove(0,1))  y++;
+            if (c == 's' && canMove(0, 1)) y++;
             if (c=='q') break;
         }
-       if (canMove(0,1)) y++;
+        if (canMove(0,1)) y++;
         else {
             block2Board();
             
-            // Hứng kết quả số hàng ăn được để team của bạn xử lý tăng tốc độ
-            int score = removeLine(); 
-            if (score > 0) {
-                // Ghi chú cho đồng đội: "Chỗ này xử lý gọi hàm tăng tốc độ dựa trên biến score nhé!"
+            // Hứng kết quả số hàng ăn được (Lưu ý: dùng biến lines để không đè biến score toàn cục)
+            int lines = removeLine(); 
+            if (lines > 0) {
+                // Gọi hàm tăng tốc độ dựa trên biến lines ở đây!
             }
             
-            x = 5; y = 0; b = rand() % 7;
+            x = 5; y = 1; b = rand() % 7;
+            
+            // Logic Game Over từ nhánh main
+            if (!canMove(0, 0)) {
+                gotoxy(W * 2 + 3, 8);
+                setColor(12);
+                cout << " GAME OVER! ";
+                break;
+            }
         }
         block2Board();
         draw();
-        _sleep(200);
+        Sleep(150);
     }
     return 0;
 }
