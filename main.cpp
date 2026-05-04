@@ -152,6 +152,51 @@ bool canMove(int dx, int dy){
             }
     return true;
 }
+void copyBlock(char temp[4][4]) {
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            temp[i][j] = blocks[b][i][j];
+}
+
+void rotateTempBlock(char temp[4][4]) {
+    char rotated[4][4];
+
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            rotated[j][3 - i] = temp[i][j];
+
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            temp[i][j] = rotated[i][j];
+}
+
+bool canRotate(char temp[4][4]) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (temp[i][j] != ' ') {
+                int tx = x + j;
+                int ty = y + i;
+
+                if (tx < 1 || tx >= W - 1 || ty >= H - 1 || ty < 1)
+                    return false;
+
+                if (board[ty][tx] != ' ')
+                    return false;
+            }
+        }
+    }
+    return true;
+}
+void rotateBlock() {
+    char temp[4][4];
+    copyBlock(temp);
+    rotateTempBlock(temp);
+    if (canRotate(temp)) {
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
+                blocks[b][i][j] = temp[i][j];
+    }
+}
 
 // Gộp logic đếm dòng của feature/remove-line và logic cộng điểm của main
 int removeLine() {
@@ -176,7 +221,6 @@ int removeLine() {
     }
     return linesCleared; 
 }
-
 int main()
 {
     SetConsoleOutputCP(CP_UTF8);
@@ -192,6 +236,7 @@ int main()
             char c = getch();
             if (c=='a' && canMove(-1,0)) x--;
             if (c=='d' && canMove(1,0) ) x++;
+            if (c=='w') rotateBlock();
             if (c == 's' && canMove(0, 1)) y++;
             if (c=='q') break;
         }
