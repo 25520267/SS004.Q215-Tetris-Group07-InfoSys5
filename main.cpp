@@ -265,9 +265,7 @@ int main()
 
             // Hứng kết quả số hàng ăn được (Lưu ý: dùng biến lines để không đè biến score toàn cục)
             int lines = removeLine();
-            if (lines > 0) {
-                // Gọi hàm tăng tốc độ dựa trên biến lines ở đây!
-            }
+            updateLevelAndSpeed(lines);
 
             x = 5; y = 1; b = rand() % 7;
 
