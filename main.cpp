@@ -230,6 +230,8 @@ int removeLine() {
 void updateLevelAndSpeed(int lines) {
     if (lines > 0) {
         totalLines += lines;
+        // Tính level dựa trên tổng số dòng (ví dụ 5 dòng 1 level)
+        level = (totalLines / 5) + 1;
     }
 }
 int main()
