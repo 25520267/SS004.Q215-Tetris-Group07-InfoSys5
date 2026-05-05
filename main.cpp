@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <time.h>
 using namespace std;
+
 #define H 20
 #define W 15
 char board[H][W] = {} ;
@@ -72,14 +73,14 @@ char blocks[][4][4] = {
          {'L','L','L',' '},
          {' ',' ',' ',' '}}
 };
-
 int x=4,y=0,b=1;
+// Khởi tạo các biến global cho Level, Speed và tổng số hàng
 int score = 0;
-
 int level = 1;      // Cấp độ hiện tại
 int totalLines = 0; // Tổng số dòng đã ăn để tính level
 int speed = 150;    // Tốc độ mặc định ban đầu
 
+// Ép kiểu SHORT cho COORD để tránh cảnh báo compiler
 void gotoxy(int x, int y) {
     COORD c = {(SHORT)x, (SHORT)y};
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
@@ -117,6 +118,7 @@ void initBoard(){
             else board[i][j] = ' ';
 }
 
+//  Mở rộng khung và hiển thị Level trong hàm draw
 void draw(){
     gotoxy(0,0);
     for (int i = 0 ; i < H ; i++, cout<<endl)
@@ -141,7 +143,9 @@ void draw(){
     gotoxy(W * 2 + 3, 3); cout << "║   TETRIS   ║";
     gotoxy(W * 2 + 3, 4); cout << "╠════════════╣";
     gotoxy(W * 2 + 3, 5); cout << "║ SCORE: " << score << "\t ║";
-    gotoxy(W * 2 + 3, 6); cout << "╚════════════╝";
+    // Hiển thị Level ra màn hình
+    gotoxy(W * 2 + 3, 6); cout << "║ LEVEL: " << level << "\t ║";
+    gotoxy(W * 2 + 3, 7); cout << "╚════════════╝";
     setColor(7);
 }
 
@@ -156,6 +160,7 @@ bool canMove(int dx, int dy){
             }
     return true;
 }
+
 void copyBlock(char temp[4][4]) {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
@@ -164,11 +169,9 @@ void copyBlock(char temp[4][4]) {
 
 void rotateTempBlock(char temp[4][4]) {
     char rotated[4][4];
-
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
             rotated[j][3 - i] = temp[i][j];
-
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
             temp[i][j] = rotated[i][j];
@@ -180,17 +183,14 @@ bool canRotate(char temp[4][4]) {
             if (temp[i][j] != ' ') {
                 int tx = x + j;
                 int ty = y + i;
-
-                if (tx < 1 || tx >= W - 1 || ty >= H - 1 || ty < 1)
-                    return false;
-
-                if (board[ty][tx] != ' ')
-                    return false;
+                if (tx < 1 || tx >= W - 1 || ty >= H - 1 || ty < 1) return false;
+                if (board[ty][tx] != ' ') return false;
             }
         }
     }
     return true;
 }
+
 void rotateBlock() {
     char temp[4][4];
     copyBlock(temp);
@@ -202,7 +202,6 @@ void rotateBlock() {
     }
 }
 
-// Gộp logic đếm dòng của feature/remove-line và logic cộng điểm của main
 int removeLine() {
     int linesCleared = 0;
     for (int i = H - 2; i > 0; i--) {
@@ -210,11 +209,9 @@ int removeLine() {
         for (int j = 1; j < W - 1; j++) {
             if (board[i][j] == ' ') { full = false; break; }
         }
-
         if (full) {
-            score += 10; // Cập nhật điểm
-            linesCleared++; // Đếm số hàng ăn được
-
+            score += 10;
+            linesCleared++;
             for (int ii = i; ii > 1; ii--) {
                 for (int j = 1; j < W - 1; j++) board[ii][j] = board[ii - 1][j];
             }
@@ -225,6 +222,20 @@ int removeLine() {
     }
     return linesCleared;
 }
+
+// Tách hàm cập nhật Cấp độ và Tốc độ
+void updateLevelAndSpeed(int lines) {
+    if (lines > 0) {
+        totalLines += lines;
+        // Tính level dựa trên tổng số dòng (ví dụ 5 dòng 1 level)
+        level = (totalLines / 5) + 1;
+        // Giảm thời gian trễ để tăng tốc độ rơi
+        speed = 150 - (level * 10);
+        // Đặt giới hạn tốc độ tối thiểu để game không quá nhanh
+        if (speed < 30) speed = 30;
+    }
+}
+
 int main()
 {
     SetConsoleOutputCP(CP_UTF8);
@@ -247,18 +258,16 @@ int main()
         if (canMove(0,1)) y++;
         else {
             block2Board();
-
             // Hứng kết quả số hàng ăn được (Lưu ý: dùng biến lines để không đè biến score toàn cục)
+            // Gọi hàm xử lý tăng tốc sau khi xóa dòng
             int lines = removeLine();
-            if (lines > 0) {
-                // Gọi hàm tăng tốc độ dựa trên biến lines ở đây!
-            }
+            updateLevelAndSpeed(lines);
 
             x = 5; y = 1; b = rand() % 7;
-
             // Logic Game Over từ nhánh main
+            // Chỉnh tọa độ thông báo Game Over cho khớp UI mới
             if (!canMove(0, 0)) {
-                gotoxy(W * 2 + 3, 8);
+                gotoxy(W * 2 + 3, 9);
                 setColor(12);
                 cout << " GAME OVER! ";
                 break;
@@ -266,7 +275,8 @@ int main()
         }
         block2Board();
         draw();
-        Sleep(150);
+        // Sử dụng biến speed thay cho giá trị cố định
+        Sleep(speed);
     }
     return 0;
 }
