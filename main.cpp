@@ -279,7 +279,7 @@ int main()
         }
         block2Board();
         draw();
-        Sleep(150);
+        Sleep(speed);
     }
     return 0;
 }
