@@ -143,6 +143,7 @@ void draw(){
     gotoxy(W * 2 + 3, 3); cout << "║   TETRIS   ║";
     gotoxy(W * 2 + 3, 4); cout << "╠════════════╣";
     gotoxy(W * 2 + 3, 5); cout << "║ SCORE: " << score << "\t ║";
+    gotoxy(W * 2 + 3, 6); cout << "║ LEVEL: " << level << "\t ║";
     gotoxy(W * 2 + 3, 6); cout << "╚════════════╝";
     setColor(7);
 }
