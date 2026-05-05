@@ -234,6 +234,8 @@ void updateLevelAndSpeed(int lines) {
         level = (totalLines / 5) + 1;
         // Giảm thời gian trễ để tăng tốc độ rơi
         speed = 150 - (level * 10);
+        // Đặt giới hạn tốc độ tối thiểu để game không quá nhanh
+        if (speed < 30) speed = 30;
     }
 }
 int main()
