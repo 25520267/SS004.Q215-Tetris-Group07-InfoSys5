@@ -276,7 +276,8 @@ int main()
         }
         block2Board();
         draw();
-        Sleep(150);
+        // Sử dụng biến speed thay cho giá trị cố định
+        Sleep(speed);
     }
     return 0;
 }
