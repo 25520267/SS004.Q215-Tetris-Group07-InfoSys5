@@ -267,8 +267,9 @@ int main()
             x = 5; y = 1; b = rand() % 7;
 
             // Logic Game Over từ nhánh main
+            // Chỉnh tọa độ thông báo Game Over cho khớp UI mới
             if (!canMove(0, 0)) {
-                gotoxy(W * 2 + 3, 8);
+                gotoxy(W * 2 + 3, 9);
                 setColor(12);
                 cout << " GAME OVER! ";
                 break;
