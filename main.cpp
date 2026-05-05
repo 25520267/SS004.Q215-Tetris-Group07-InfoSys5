@@ -76,6 +76,10 @@ char blocks[][4][4] = {
 int x=4,y=0,b=1;
 int score = 0;
 
+int level = 1;       // Cấp độ hiện tại
+int totalLines = 0; // Tổng số dòng đã ăn để tính level
+int speed = 150;    // Tốc độ mặc định ban đầu
+
 void gotoxy(int x, int y) {
     COORD c = {x, y};
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
@@ -118,7 +122,7 @@ void draw(){
     for (int i = 0 ; i < H ; i++, cout<<endl)
         for (int j = 0 ; j < W ; j++){
         if (board[i][j] == '#') {
-            setColor(8); 
+            setColor(8);
             if (i == 0 && j == 0) cout << "╔═";
             else if (i == 0 && j == W - 1) cout << "╗ ";
             else if (i == H - 1 && j == 0) cout << "╚═";
@@ -126,13 +130,13 @@ void draw(){
             else if (i == 0 || i == H - 1) cout << "══";
             else if (j == 0 || j == W - 1) cout << "║ ";
         } else if (board[i][j] == ' ') {
-            cout << "  "; 
+            cout << "  ";
         } else {
-            setColor(14); 
-            cout << "██"; 
+            setColor(14);
+            cout << "██";
         }
     }
-    setColor(11); 
+    setColor(11);
     gotoxy(W * 2 + 3, 2); cout << "╔════════════╗";
     gotoxy(W * 2 + 3, 3); cout << "║   TETRIS   ║";
     gotoxy(W * 2 + 3, 4); cout << "╠════════════╣";
@@ -200,17 +204,17 @@ void rotateBlock() {
 
 // Gộp logic đếm dòng của feature/remove-line và logic cộng điểm của main
 int removeLine() {
-    int linesCleared = 0; 
+    int linesCleared = 0;
     for (int i = H - 2; i > 0; i--) {
         bool full = true;
         for (int j = 1; j < W - 1; j++) {
             if (board[i][j] == ' ') { full = false; break; }
         }
-        
+
         if (full) {
             score += 10; // Cập nhật điểm
             linesCleared++; // Đếm số hàng ăn được
-            
+
             for (int ii = i; ii > 1; ii--) {
                 for (int j = 1; j < W - 1; j++) board[ii][j] = board[ii - 1][j];
             }
@@ -219,7 +223,7 @@ int removeLine() {
             Sleep(200);
         }
     }
-    return linesCleared; 
+    return linesCleared;
 }
 int main()
 {
@@ -229,7 +233,7 @@ int main()
     b = rand() % 7;
     system("cls");
     initBoard();
-    
+
     while (1){
         boardDelBlock();
         if (kbhit()){
@@ -243,15 +247,15 @@ int main()
         if (canMove(0,1)) y++;
         else {
             block2Board();
-            
+
             // Hứng kết quả số hàng ăn được (Lưu ý: dùng biến lines để không đè biến score toàn cục)
-            int lines = removeLine(); 
+            int lines = removeLine();
             if (lines > 0) {
                 // Gọi hàm tăng tốc độ dựa trên biến lines ở đây!
             }
-            
+
             x = 5; y = 1; b = rand() % 7;
-            
+
             // Logic Game Over từ nhánh main
             if (!canMove(0, 0)) {
                 gotoxy(W * 2 + 3, 8);
