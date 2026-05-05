@@ -271,7 +271,7 @@ int main()
 
             // Logic Game Over từ nhánh main
             if (!canMove(0, 0)) {
-                gotoxy(W * 2 + 3, 8);
+                gotoxy(W * 2 + 3, 9);
                 setColor(12);
                 cout << " GAME OVER! ";
                 break;
