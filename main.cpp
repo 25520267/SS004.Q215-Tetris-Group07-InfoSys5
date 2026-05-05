@@ -234,6 +234,8 @@ void updateLevelAndSpeed(int linesCleared) {
         totalLines += linesCleared;
         // Tính toán level: cứ mỗi 5 hàng tăng 1 cấp
         level = (totalLines / 5) + 1;
+        // Tính toán tốc độ: mỗi level giảm 15ms thời gian chờ
+        speed = 150 - ((level - 1) * 15);
     }
 }
 int main()
