@@ -232,6 +232,8 @@ void updateLevelAndSpeed(int lines) {
         totalLines += lines;
         // Tính level dựa trên tổng số dòng (ví dụ 5 dòng 1 level)
         level = (totalLines / 5) + 1;
+        // Giảm thời gian trễ để tăng tốc độ rơi
+        speed = 150 - (level * 10);
     }
 }
 int main()
