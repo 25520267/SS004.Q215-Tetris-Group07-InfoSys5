@@ -226,6 +226,12 @@ int removeLine() {
     }
     return linesCleared;
 }
+// Hàm cập nhật Cấp độ và Tốc độ
+void updateLevelAndSpeed(int lines) {
+    if (lines > 0) {
+        totalLines += lines;
+    }
+}
 int main()
 {
     SetConsoleOutputCP(CP_UTF8);
