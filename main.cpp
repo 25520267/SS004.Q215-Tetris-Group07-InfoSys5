@@ -76,12 +76,12 @@ char blocks[][4][4] = {
 int x=4,y=0,b=1;
 int score = 0;
 
-int level = 1;       // Cấp độ hiện tại
+int level = 1;      // Cấp độ hiện tại
 int totalLines = 0; // Tổng số dòng đã ăn để tính level
 int speed = 150;    // Tốc độ mặc định ban đầu
 
 void gotoxy(int x, int y) {
-    COORD c = {(SHORT)x, (SHORT)y};
+    COORD c = {x, y};
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
 }
 
@@ -141,8 +141,7 @@ void draw(){
     gotoxy(W * 2 + 3, 3); cout << "║   TETRIS   ║";
     gotoxy(W * 2 + 3, 4); cout << "╠════════════╣";
     gotoxy(W * 2 + 3, 5); cout << "║ SCORE: " << score << "\t ║";
-    gotoxy(W * 2 + 3, 6); cout << "║ LEVEL: " << level << "\t ║";
-    gotoxy(W * 2 + 3, 7); cout << "╚════════════╝";
+    gotoxy(W * 2 + 3, 6); cout << "╚════════════╝";
     setColor(7);
 }
 
@@ -226,18 +225,6 @@ int removeLine() {
     }
     return linesCleared;
 }
-// Hàm cập nhật Cấp độ và Tốc độ
-void updateLevelAndSpeed(int lines) {
-    if (lines > 0) {
-        totalLines += lines;
-        // Tính level dựa trên tổng số dòng (ví dụ 5 dòng 1 level)
-        level = (totalLines / 5) + 1;
-        // Giảm thời gian trễ để tăng tốc độ rơi
-        speed = 150 - (level * 10);
-        // Đặt giới hạn tốc độ tối thiểu để game không quá nhanh
-        if (speed < 30) speed = 30;
-    }
-}
 int main()
 {
     SetConsoleOutputCP(CP_UTF8);
@@ -260,16 +247,18 @@ int main()
         if (canMove(0,1)) y++;
         else {
             block2Board();
-            // Gọi hàm xử lý tăng tốc sau khi xóa dòng
+
+            // Hứng kết quả số hàng ăn được (Lưu ý: dùng biến lines để không đè biến score toàn cục)
             int lines = removeLine();
-            updateLevelAndSpeed(lines);
+            if (lines > 0) {
+                // Gọi hàm tăng tốc độ dựa trên biến lines ở đây!
+            }
 
             x = 5; y = 1; b = rand() % 7;
 
             // Logic Game Over từ nhánh main
-            // Chỉnh tọa độ thông báo Game Over cho khớp UI mới
             if (!canMove(0, 0)) {
-                gotoxy(W * 2 + 3, 9);
+                gotoxy(W * 2 + 3, 8);
                 setColor(12);
                 cout << " GAME OVER! ";
                 break;
@@ -277,8 +266,7 @@ int main()
         }
         block2Board();
         draw();
-        // Sử dụng biến speed thay cho giá trị cố định
-        Sleep(speed);
+        Sleep(150);
     }
     return 0;
 }
