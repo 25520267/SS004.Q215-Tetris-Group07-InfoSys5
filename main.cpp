@@ -232,6 +232,8 @@ void updateLevelAndSpeed(int linesCleared) {
     if (linesCleared > 0) {
         // Cộng dồn tổng số hàng
         totalLines += linesCleared;
+        // Tính toán level: cứ mỗi 5 hàng tăng 1 cấp
+        level = (totalLines / 5) + 1;
     }
 }
 int main()
