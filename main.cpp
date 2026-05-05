@@ -83,7 +83,7 @@ int totalLines = 0;
 int speed = 150;
 
 void gotoxy(int x, int y) {
-    COORD c = {x, y};
+    COORD c = { (SHORT)x, (SHORT)y };
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
 }
 
