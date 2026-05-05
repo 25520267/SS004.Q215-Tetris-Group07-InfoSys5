@@ -236,6 +236,8 @@ void updateLevelAndSpeed(int linesCleared) {
         level = (totalLines / 5) + 1;
         // Tính toán tốc độ: mỗi level giảm 15ms thời gian chờ
         speed = 150 - ((level - 1) * 15);
+        // Đặt giới hạn tốc độ tối thiểu là 30ms để đảm bảo chơi được
+        if (speed < 30) speed = 30;
     }
 }
 int main()
