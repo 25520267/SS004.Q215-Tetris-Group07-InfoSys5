@@ -81,7 +81,7 @@ int totalLines = 0; // Tổng số dòng đã ăn để tính level
 int speed = 150;    // Tốc độ mặc định ban đầu
 
 void gotoxy(int x, int y) {
-    COORD c = {x, y};
+    COORD c = {(SHORT)x, (SHORT)y};
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
 }
 
