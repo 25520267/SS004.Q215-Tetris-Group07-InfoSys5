@@ -228,6 +228,12 @@ int removeLine() {
     }
     return linesCleared;
 }
+void updateLevelAndSpeed(int linesCleared) {
+    if (linesCleared > 0) {
+        // Cộng dồn tổng số hàng
+        totalLines += linesCleared;
+    }
+}
 int main()
 {
     SetConsoleOutputCP(CP_UTF8);
