@@ -1,0 +1,13 @@
+.vs/
+out/
+build/
+bin/
+obj/
+x64/
+Debug/
+Release/
+*.exe
+*.user
+*.suo
+*.db
+*.opendb
