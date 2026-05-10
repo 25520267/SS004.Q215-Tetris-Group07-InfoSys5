@@ -2,19 +2,27 @@
 #include <conio.h>
 #include <windows.h>
 #include <time.h>
+#include <string>
 #include "Piece.h"
 #include "Blocks.h"
+
 using namespace std;
 
-
-char board[H][W] = {};
-Piece *currentPiece = nullptr;
-
-// --- ĐỊNH NGHĨA KÍCH THƯỚC UI ---
+// --- ĐỊNH NGHĨA KÍCH THƯỚC UI (Phải để trên cùng) ---
 const int W = 12; 
 const int H = 22; 
 const int OFFSET_X = 2; 
 const int OFFSET_Y = 1; 
+
+// Khai báo mảng sau khi đã có kích thước
+char board[H][W] = {};
+Piece *currentPiece = nullptr;
+
+// Bộ biến Global duy nhất, không trùng lặp
+int score = 0;
+int level = 1;      
+int linesCleared = 0; 
+int speed = 1000;    
 
 enum TetrisColor {
     COLOR_BLACK = 0, COLOR_CYAN = 11, COLOR_YELLOW = 14, 
@@ -22,9 +30,14 @@ enum TetrisColor {
     COLOR_BLUE = 9, COLOR_ORANGE = 6, COLOR_WHITE = 15, COLOR_GRAY = 8     
 };
 
-int linesCleared = 0; // Thêm biến đếm số dòng đã xóa
+// Ép kiểu SHORT cho COORD để tránh cảnh báo compiler
+void gotoxy(int x, int y)
+{
+    COORD c = {(SHORT)x, (SHORT)y};
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
 
-// Cập nhật hàm setColor có nền
+// Hàm setColor có hỗ trợ màu nền (Dùng 1 hàm này thôi)
 void setColor(int foreground, int background = 0) {
     WORD wAttributes = (background << 4) | foreground;
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), wAttributes);
@@ -53,25 +66,6 @@ void setup() {
             
     score = 0; level = 1; speed = 1000; linesCleared = 0;
     currentPiece = new PieceT();
-}
-
-// Khởi tạo các biến global cho Level, Speed và tổng số hàng
-int score = 0;
-int level = 1;      // Cấp độ hiện tại
-int totalLines = 0; // Tổng số dòng đã ăn để tính level
-int speed = 150;    // Tốc độ mặc định ban đầu
-
-// Ép kiểu SHORT cho COORD để tránh cảnh báo compiler
-void gotoxy(int x, int y)
-{
-    COORD c = {(SHORT)x, (SHORT)y};
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
-}
-
-
-void setColor(int color)
-{
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
 void drawBlock(int boardX, int boardY, char type) {
