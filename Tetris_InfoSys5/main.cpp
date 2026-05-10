@@ -74,22 +74,6 @@ void setColor(int color)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
-void block2Board()
-{
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-            if (currentPiece->getShape(i, j) != ' ')
-                board[currentPiece->getY() + i][currentPiece->getX() + j] = currentPiece->getShape(i, j);
-}
-
-void boardDelBlock()
-{
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-            if (currentPiece->getShape(i, j) != ' ' && currentPiece->getY() + j < H)
-                board[currentPiece->getY() + i][currentPiece->getX() + j] = ' ';
-}
-
 void drawBlock(int boardX, int boardY, char type) {
     gotoxy(OFFSET_X + boardX * 2, OFFSET_Y + boardY);
     if (type == ' ') {
@@ -151,20 +135,56 @@ void drawStats() {
     setColor(COLOR_WHITE, COLOR_BLACK); 
 }
 
-bool canMove(int dx, int dy)
-{
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-            if (currentPiece->getShape(i, j) != ' ')
-            {
+void drawCurrentPiece() {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (currentPiece->getShape(i, j) != ' ') {
+                int px = currentPiece->getX() + j;
+                int py = currentPiece->getY() + i;
+                if (py >= 0 && py < H && px >= 0 && px < W) 
+                    drawBlock(px, py, '#'); // Sẽ đổi thành ký tự khác khi có nhiều khối
+            }
+        }
+    }
+}
+
+void clearCurrentPiece() {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (currentPiece->getShape(i, j) != ' ') {
+                int px = currentPiece->getX() + j;
+                int py = currentPiece->getY() + i;
+                if (py >= 0 && py < H && px >= 0 && px < W) 
+                    drawBlock(px, py, ' '); 
+            }
+        }
+    }
+}
+
+bool canMove(int dx, int dy) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (currentPiece->getShape(i, j) != ' ') {
                 int tx = currentPiece->getX() + j + dx;
                 int ty = currentPiece->getY() + i + dy;
-                if (tx < 1 || tx >= W - 1 || ty >= H - 1 || ty < 1)
-                    return false;
-                if (board[ty][tx] != ' ')
-                    return false;
+                // Cập nhật biên cho khớp với UI 12x22
+                if (tx < 0 || tx >= W || ty >= H || ty < 0) return false;
+                if (board[ty][tx] != ' ') return false;
             }
+        }
+    }
     return true;
+}
+
+void block2Board() {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (currentPiece->getShape(i, j) != ' ') {
+                if (currentPiece->getY() + i >= 0)
+                    board[currentPiece->getY() + i][currentPiece->getX() + j] = '#'; 
+            }
+        }
+    }
 }
 
 int removeLine()
