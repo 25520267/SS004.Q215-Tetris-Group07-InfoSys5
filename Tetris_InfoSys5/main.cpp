@@ -90,64 +90,65 @@ void boardDelBlock()
                 board[currentPiece->getY() + i][currentPiece->getX() + j] = ' ';
 }
 
-void initBoard()
-{
-    for (int i = 0; i < H; i++)
-        for (int j = 0; j < W; j++)
-            if ((i == 0) || (i == H - 1) || (j == 0) || (j == W - 1))
-                board[i][j] = '#';
-            else
-                board[i][j] = ' ';
+void drawBlock(int boardX, int boardY, char type) {
+    gotoxy(OFFSET_X + boardX * 2, OFFSET_Y + boardY);
+    if (type == ' ') {
+        setColor(COLOR_GRAY, COLOR_BLACK); cout << ". "; 
+    } else {
+        int color = getPieceColor(type);
+        setColor(COLOR_BLACK, color); cout << "  "; 
+        setColor(COLOR_WHITE, COLOR_BLACK); 
+    }
 }
 
-//  Mở rộng khung và hiển thị Level trong hàm draw
-void draw()
-{
-    gotoxy(0, 0);
-    for (int i = 0; i < H; i++, cout << endl)
-        for (int j = 0; j < W; j++)
-        {
-            if (board[i][j] == '#')
-            {
-                setColor(8);
-                if (i == 0 && j == 0)
-                    cout << "╔═";
-                else if (i == 0 && j == W - 1)
-                    cout << "╗ ";
-                else if (i == H - 1 && j == 0)
-                    cout << "╚═";
-                else if (i == H - 1 && j == W - 1)
-                    cout << "╝ ";
-                else if (i == 0 || i == H - 1)
-                    cout << "══";
-                else if (j == 0 || j == W - 1)
-                    cout << "║ ";
-            }
-            else if (board[i][j] == ' ')
-            {
-                cout << "  ";
-            }
-            else
-            {
-                setColor(14);
-                cout << "██";
-            }
+void drawOuterFrame() {
+    setColor(COLOR_WHITE, COLOR_BLACK);
+    gotoxy(OFFSET_X - 1, OFFSET_Y - 1);
+    cout << (char)201; for (int i = 0; i < W * 2; i++) cout << (char)205; cout << (char)187;
+
+    for (int i = 0; i < H; i++) {
+        gotoxy(OFFSET_X - 1, OFFSET_Y + i); cout << (char)186; 
+        for (int j = 0; j < W; j++) {
+            if (board[i][j] == ' ') { setColor(COLOR_GRAY, COLOR_BLACK); cout << ". "; }
+            else drawBlock(j, i, board[i][j]);
         }
-    setColor(11);
-    gotoxy(W * 2 + 3, 2);
-    cout << "╔════════════╗";
-    gotoxy(W * 2 + 3, 3);
-    cout << "║   TETRIS   ║";
-    gotoxy(W * 2 + 3, 4);
-    cout << "╠════════════╣";
-    gotoxy(W * 2 + 3, 5);
-    cout << "║ SCORE: " << score << "\t ║";
-    // Hiển thị Level ra màn hình
-    gotoxy(W * 2 + 3, 6);
-    cout << "║ LEVEL: " << level << "\t ║";
-    gotoxy(W * 2 + 3, 7);
-    cout << "╚════════════╝";
-    setColor(7);
+        setColor(COLOR_WHITE, COLOR_BLACK);
+        gotoxy(OFFSET_X + W * 2, OFFSET_Y + i); cout << (char)186; 
+    }
+
+    gotoxy(OFFSET_X - 1, OFFSET_Y + H);
+    cout << (char)200; for (int i = 0; i < W * 2; i++) cout << (char)205; cout << (char)188; 
+}
+
+void drawStats() {
+    int statsX = OFFSET_X + W * 2 + 4;
+    int statsY = OFFSET_Y + 1;
+
+    gotoxy(statsX, statsY - 1); setColor(COLOR_CYAN, COLOR_BLACK); cout << "== TETRIS INFOSYS 5 ==";
+    setColor(COLOR_WHITE, COLOR_BLACK);
+    gotoxy(statsX, statsY + 1); cout << (char)218 << "-------------"; cout << (char)191; 
+    gotoxy(statsX, statsY + 2); cout << (char)179 << " SCORE       "; cout << (char)179; 
+    gotoxy(statsX, statsY + 3); cout << (char)195 << "-------------"; cout << (char)180; 
+    
+    gotoxy(statsX + 2, statsY + 4); setColor(COLOR_YELLOW, COLOR_BLACK);
+    string s = to_string(score);
+    for(int i=0; i < 10 - s.length(); i++) cout << " "; cout << s;
+
+    setColor(COLOR_WHITE, COLOR_BLACK);
+    gotoxy(statsX, statsY + 5); cout << (char)192 << "-------------"; cout << (char)217; 
+    gotoxy(statsX, statsY + 7); cout << (char)218 << "-------------"; cout << (char)191;
+    gotoxy(statsX, statsY + 8); cout << (char)179 << " LEVEL       "; cout << (char)179;
+    gotoxy(statsX, statsY + 9); setColor(COLOR_GREEN, COLOR_BLACK); printf("      %02d     ", level);
+    setColor(COLOR_WHITE, COLOR_BLACK);
+    gotoxy(statsX, statsY + 10); cout << (char)192 << "-------------"; cout << (char)217;
+
+    setColor(COLOR_GRAY, COLOR_BLACK);
+    gotoxy(statsX, statsY + 13); cout << "CONTROL:";
+    gotoxy(statsX + 2, statsY + 14); cout << "A / D : Move";
+    gotoxy(statsX + 2, statsY + 15); cout << "W     : Rotate";
+    gotoxy(statsX + 2, statsY + 16); cout << "S     : Soft Drop";
+    gotoxy(statsX + 2, statsY + 17); cout << "Q     : Quit";
+    setColor(COLOR_WHITE, COLOR_BLACK); 
 }
 
 bool canMove(int dx, int dy)
