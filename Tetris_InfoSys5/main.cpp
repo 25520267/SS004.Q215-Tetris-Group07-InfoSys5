@@ -6,10 +6,54 @@
 #include "Blocks.h"
 using namespace std;
 
-#define H 20
-#define W 15
+
 char board[H][W] = {};
 Piece *currentPiece = nullptr;
+
+// --- ĐỊNH NGHĨA KÍCH THƯỚC UI ---
+const int W = 12; 
+const int H = 22; 
+const int OFFSET_X = 2; 
+const int OFFSET_Y = 1; 
+
+enum TetrisColor {
+    COLOR_BLACK = 0, COLOR_CYAN = 11, COLOR_YELLOW = 14, 
+    COLOR_PURPLE = 13, COLOR_GREEN = 10, COLOR_RED = 12, 
+    COLOR_BLUE = 9, COLOR_ORANGE = 6, COLOR_WHITE = 15, COLOR_GRAY = 8     
+};
+
+int linesCleared = 0; // Thêm biến đếm số dòng đã xóa
+
+// Cập nhật hàm setColor có nền
+void setColor(int foreground, int background = 0) {
+    WORD wAttributes = (background << 4) | foreground;
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), wAttributes);
+}
+
+int getPieceColor(char pType) {
+    switch (pType) {
+    case 'I': return COLOR_CYAN;   case 'O': return COLOR_YELLOW;
+    case 'T': return COLOR_PURPLE; case 'S': return COLOR_GREEN;
+    case 'Z': return COLOR_RED;    case 'J': return COLOR_BLUE;
+    case 'L': return COLOR_ORANGE; case '#': return COLOR_WHITE; 
+    default: return COLOR_WHITE;
+    }
+}
+
+void setup() {
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(out, &cursorInfo);
+    cursorInfo.bVisible = false;
+    SetConsoleCursorInfo(out, &cursorInfo);
+
+    for (int i = 0; i < H; i++) 
+        for (int j = 0; j < W; j++) 
+            board[i][j] = ' ';
+            
+    score = 0; level = 1; speed = 1000; linesCleared = 0;
+    currentPiece = new PieceT();
+}
 
 // Khởi tạo các biến global cho Level, Speed và tổng số hàng
 int score = 0;
@@ -24,13 +68,6 @@ void gotoxy(int x, int y)
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
 }
 
-void hideCursor()
-{
-    CONSOLE_CURSOR_INFO cursorInfo;
-    GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
-    cursorInfo.bVisible = false;
-    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
-}
 
 void setColor(int color)
 {
