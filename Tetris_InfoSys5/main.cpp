@@ -235,59 +235,63 @@ void checkLines() {
     }
 }
 
-int main()
-{
-    SetConsoleOutputCP(CP_UTF8);
-    hideCursor();
-    srand((unsigned int)time(0));
+int main() {
+    system("mode con cols=60 lines=26");
+    SetConsoleTitleA("Tetris InfoSys5 - Reworked UI");
+
+    setup();
     system("cls");
-    initBoard();
+    drawOuterFrame();
+    drawStats();
 
-    currentPiece = new PieceT();
-
-    while (1)
-    {
-        boardDelBlock();
-        if (_kbhit())
-        {
+    clock_t start = clock();
+    while (1) {
+        if (_kbhit()) {
             char c = _getch();
-            if (c == 'a' && canMove(-1, 0))
-                currentPiece->moveLeft();
-            if (c == 'd' && canMove(1, 0))
-                currentPiece->moveRight();
-            if (c == 'w')
-                currentPiece->rotate(); 
-            if (c == 's' && canMove(0, 1))
-                currentPiece->moveDown();
-            if (c == 'q')
-                break;
+            clearCurrentPiece(); 
+            if (c == 'a' && canMove(-1, 0)) currentPiece->moveLeft();
+            if (c == 'd' && canMove(1, 0)) currentPiece->moveRight();
+            if (c == 'w') currentPiece->rotate(); 
+            if (c == 's' && canMove(0, 1)) currentPiece->moveDown();
+            if (c == 'q') break;
+            drawCurrentPiece(); 
         }
-        if (canMove(0, 1))
-            currentPiece->moveDown();
-        else
-        {
-            block2Board();
-            // Hứng kết quả số hàng ăn được (Lưu ý: dùng biến lines để không đè biến score toàn cục)
-            // Gọi hàm xử lý tăng tốc sau khi xóa dòng
-            int lines = removeLine();
-            updateLevelAndSpeed(lines);
 
-            delete currentPiece;
-            currentPiece = new PieceT();
-            // Logic Game Over từ nhánh main
-            // Chỉnh tọa độ thông báo Game Over cho khớp UI mới
-            if (!canMove(0, 0))
-            {
-                gotoxy(W * 2 + 3, 9);
-                setColor(12);
-                cout << " GAME OVER! ";
-                break;
+        if (clock() - start > speed) {
+            clearCurrentPiece();
+            if (canMove(0, 1)) {
+                currentPiece->moveDown();
+                drawCurrentPiece();
             }
+            else {
+                drawCurrentPiece(); 
+                block2Board();
+                checkLines();
+                delete currentPiece;
+                currentPiece = new PieceT(); 
+
+                if (!canMove(0, 0)) {
+                    for(int i=0; i<3; i++) {
+                        system("color 08"); Sleep(200);
+                        system("color 00"); Sleep(200);
+                    }
+                    
+                    int goX = OFFSET_X + W / 2 + 1;
+                    int goY = OFFSET_Y + H / 2 - 1;
+                    
+                    setColor(COLOR_RED, COLOR_BLACK);
+                    gotoxy(goX - 2, goY - 1); cout << (char)201 << "═════════════" << (char)187;
+                    gotoxy(goX - 2, goY);     cout << (char)186 << "  GAME OVER! " << (char)186;
+                    gotoxy(goX - 2, goY + 1); cout << (char)200 << "═════════════" << (char)188;
+                    
+                    setColor(COLOR_WHITE, COLOR_BLACK);
+                    gotoxy(0, OFFSET_Y + H + 2);
+                    system("pause");
+                    break;
+                }
+            }
+            start = clock();
         }
-        block2Board();
-        draw();
-        // Sử dụng biến speed thay cho giá trị cố định
-        Sleep(speed);
     }
     return 0;
 }
