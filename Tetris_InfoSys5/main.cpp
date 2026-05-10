@@ -187,50 +187,51 @@ void block2Board() {
     }
 }
 
-int removeLine()
-{
-    int linesCleared = 0;
-    for (int i = H - 2; i > 0; i--)
-    {
-        bool full = true;
-        for (int j = 1; j < W - 1; j++)
-        {
-            if (board[i][j] == ' ')
-            {
-                full = false;
-                break;
-            }
-        }
-        if (full)
-        {
-            score += 10;
-            linesCleared++;
-            for (int ii = i; ii > 1; ii--)
-            {
-                for (int j = 1; j < W - 1; j++)
-                    board[ii][j] = board[ii - 1][j];
-            }
-            i++;
-            draw();
-            Sleep(200);
+void updateBoardUI() {
+    for (int i = 0; i < H; i++) {
+        for (int j = 0; j < W; j++) {
+            drawBlock(j, i, board[i][j]);
         }
     }
-    return linesCleared;
 }
 
-// Tách hàm cập nhật Cấp độ và Tốc độ
-void updateLevelAndSpeed(int lines)
-{
-    if (lines > 0)
-    {
-        totalLines += lines;
-        // Tính level dựa trên tổng số dòng (ví dụ 5 dòng 1 level)
-        level = (totalLines / 5) + 1;
-        // Giảm thời gian trễ để tăng tốc độ rơi
-        speed = 150 - (level * 10);
-        // Đặt giới hạn tốc độ tối thiểu để game không quá nhanh
-        if (speed < 30)
-            speed = 30;
+void checkLines() {
+    int combo = 0;
+    for (int i = H - 1; i >= 0; i--) {
+        bool full = true;
+        for (int j = 0; j < W; j++) {
+            if (board[i][j] == ' ') { full = false; break; }
+        }
+        if (full) {
+            combo++;
+            for(int blink=0; blink<2; blink++) {
+                gotoxy(OFFSET_X, OFFSET_Y + i); setColor(COLOR_BLACK, COLOR_WHITE);
+                for(int j=0; j<W*2; j++) cout << " "; Sleep(50);
+                gotoxy(OFFSET_X, OFFSET_Y + i); setColor(COLOR_BLACK, COLOR_BLACK);
+                for(int j=0; j<W*2; j++) cout << " "; Sleep(50);
+            }
+            setColor(COLOR_WHITE, COLOR_BLACK);
+
+            for (int k = i; k > 0; k--) 
+                for (int j = 0; j < W; j++) 
+                    board[k][j] = board[k - 1][j];
+                    
+            for (int j = 0; j < W; j++) board[0][j] = ' ';
+            i++; 
+            updateBoardUI(); 
+        }
+    }
+    
+    if (combo == 1) score += 100 * level;
+    else if (combo == 2) score += 300 * level;
+    else if (combo == 3) score += 500 * level;
+    else if (combo == 4) score += 800 * level;
+
+    if (combo > 0) {
+        linesCleared += combo;
+        level = (linesCleared / 10) + 1;
+        speed = max(100, 1000 - (level - 1) * 100);
+        drawStats(); 
     }
 }
 
