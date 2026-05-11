@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <time.h>
 #include "Piece.h"
-#include "Blocks.h"
+#include "PieceFactory.h"
 using namespace std;
 
 #define H 20
@@ -184,7 +184,7 @@ int main()
     system("cls");
     initBoard();
 
-    currentPiece = new PieceT();
+    currentPiece = generateRandomPiece();
 
     while (1)
     {
@@ -214,7 +214,7 @@ int main()
             updateLevelAndSpeed(lines);
 
             delete currentPiece;
-            currentPiece = new PieceT();
+            currentPiece = generateRandomPiece();
             // Logic Game Over từ nhánh main
             // Chỉnh tọa độ thông báo Game Over cho khớp UI mới
             if (!canMove(0, 0))
