@@ -24,6 +24,9 @@
   <ItemGroup>
     <ClInclude Include="..\Blocks.h" />
     <ClInclude Include="..\Piece.h" />
+    <ClInclude Include="..\PieceO.h" />
+    <ClInclude Include="..\PieceI.h" />
+    <ClInclude Include="..\PieceFactory.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
