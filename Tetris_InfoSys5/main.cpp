@@ -129,6 +129,36 @@ bool canMove(int dx, int dy)
     return true;
 }
 
+// Kiểm tra xem khối hiện tại có thể xoay mà không va chạm không
+bool canRotate()
+{
+    // Bước 1: Transpose (hoán vị)
+    char temp[4][4];
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            temp[i][j] = currentPiece->getShape(j, i);
+
+    // Bước 2: Reverse từng hàng -> ra hình xoay thử
+    char rotated[4][4];
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            rotated[i][j] = temp[i][3 - j];
+
+    // Bước 3: Kiểm tra va chạm với tường và board
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            if (rotated[i][j] != ' ')
+            {
+                int tx = currentPiece->getX() + j;
+                int ty = currentPiece->getY() + i;
+                if (tx < 1 || tx >= W - 1 || ty >= H - 1 || ty < 1)
+                    return false;
+                if (board[ty][tx] != ' ')
+                    return false;
+            }
+    return true;
+}
+
 int removeLine()
 {
     int linesCleared = 0;
@@ -176,6 +206,8 @@ void updateLevelAndSpeed(int lines)
     }
 }
 
+
+
 int main()
 {
     SetConsoleOutputCP(CP_UTF8);
@@ -213,6 +245,7 @@ int main()
             int lines = removeLine();
             updateLevelAndSpeed(lines);
 
+            
             delete currentPiece;
             currentPiece = new PieceT();
             // Logic Game Over từ nhánh main
@@ -230,5 +263,6 @@ int main()
         // Sử dụng biến speed thay cho giá trị cố định
         Sleep(speed);
     }
+
     return 0;
 }
