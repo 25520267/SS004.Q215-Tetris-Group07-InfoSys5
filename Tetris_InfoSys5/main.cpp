@@ -6,8 +6,7 @@
 #include <time.h>
 #include <string>
 #include "Piece.h"
-#include "PieceFactory.h" // Chứa generateRandomPiece()
-#include "Blocks.h"      // Chứa các class PieceT, PieceL...
+#include "Blocks.h"
 
 using namespace std;
 
@@ -63,6 +62,7 @@ void setup() {
             board[i][j] = ' ';
             
     score = 0; level = 1; speed = 1000; linesCleared = 0;
+    srand((unsigned int)time(0));
 }
 
 void drawBlock(int boardX, int boardY, char type) {
@@ -114,25 +114,7 @@ void drawCurrentPiece() {
                     drawBlock(px, py, '#'); 
             }
         }
-<<<<<<< HEAD
-    setColor(11);
-    gotoxy(W * 2 + 3, 2);
-    cout << "╔════════════╗";
-    gotoxy(W * 2 + 3, 3);
-    cout << "║   TETRIS   ║";
-    gotoxy(W * 2 + 3, 4);
-    cout << "╠════════════╣";
-    gotoxy(W * 2 + 3, 5);
-    cout << "║ SCORE: " << left << setw(3) << score << "║";
-    // Hiển thị Level ra màn hình
-    gotoxy(W * 2 + 3, 6);
-    cout << "║ LEVEL: " << left << setw(3) << level << "║";
-    gotoxy(W * 2 + 3, 7);
-    cout << "╚════════════╝";
-    setColor(7);
-=======
     }
->>>>>>> feature/update-ui
 }
 
 void clearCurrentPiece() {
@@ -215,22 +197,13 @@ int main() {
     drawOuterFrame();
     drawStats();
     
-    currentPiece = generateRandomPiece(); // Sử dụng hàm từ Factory
+    currentPiece = createRandomPiece(); // Sử dụng hàm từ Factory
 
     clock_t start = clock();
     while (1) {
         // 1. Xử lý phím bấm
         if (_kbhit()) {
             char c = _getch();
-<<<<<<< HEAD
-            if (c == 'a' && canMove(-1, 0))
-                currentPiece->moveLeft();
-            if (c == 'd' && canMove(1, 0))
-                currentPiece->moveRight();
-            if (c == 'w')
-                currentPiece->rotate();
-            if (c == 's' && canMove(0, 1))
-=======
             clearCurrentPiece(); 
             if (c == 'a' && canMove(-1, 0)) currentPiece->moveLeft();
             if (c == 'd' && canMove(1, 0)) currentPiece->moveRight();
@@ -244,7 +217,6 @@ int main() {
         if (clock() - start > speed) {
             clearCurrentPiece();
             if (canMove(0, 1)) {
->>>>>>> feature/update-ui
                 currentPiece->moveDown();
                 drawCurrentPiece();
             } else {
@@ -252,7 +224,7 @@ int main() {
                 block2Board(); 
                 checkLines(); 
                 delete currentPiece;
-                currentPiece = generateRandomPiece(); 
+                currentPiece = createRandomPiece(); 
 
                 if (!canMove(0, 0)) {
                     gotoxy(OFFSET_X + W / 2 - 5, OFFSET_Y + H / 2);
