@@ -232,7 +232,7 @@ int main()
     system("cls");
     initBoard();
 
-    currentPiece = new PieceT();
+    currentPiece = spawnRandom();
 
     while (1)
     {
@@ -244,7 +244,8 @@ int main()
                 currentPiece->moveLeft();
             if (c == 'd' && canMove(1, 0))
                 currentPiece->moveRight();
-            if (c == 'w')
+            // Chặn xoay xuyên tường: chỉ xoay khi canRotate() trả true
+            if (c == 'w' && canRotate())
                 currentPiece->rotate(); 
             if (c == 's' && canMove(0, 1))
                 currentPiece->moveDown();
@@ -262,8 +263,10 @@ int main()
             updateLevelAndSpeed(lines);
 
             
+            // Giải phóng bộ nhớ khối cũ trước khi tạo khối mới
             delete currentPiece;
-            currentPiece = new PieceT();
+            currentPiece = spawnRandom();
+
             // Logic Game Over từ nhánh main
             // Chỉnh tọa độ thông báo Game Over cho khớp UI mới
             if (!canMove(0, 0))
@@ -279,6 +282,8 @@ int main()
         // Sử dụng biến speed thay cho giá trị cố định
         Sleep(speed);
     }
-
+    // Giải phóng bộ nhớ khi kết thúc game (chống memory leak)
+    delete currentPiece;
+    currentPiece = nullptr;
     return 0;
 }
