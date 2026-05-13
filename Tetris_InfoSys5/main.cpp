@@ -230,5 +230,6 @@ int main()
         // Sử dụng biến speed thay cho giá trị cố định
         Sleep(speed);
     }
+    delete currentPiece;
     return 0;
 }
