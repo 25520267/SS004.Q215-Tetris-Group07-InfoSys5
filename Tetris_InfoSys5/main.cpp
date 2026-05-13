@@ -5,7 +5,6 @@
 #include <windows.h>
 #include <time.h>
 #include <string>
-#include "Piece.h"
 #include "Blocks.h"
 
 using namespace std;
@@ -50,6 +49,28 @@ int getPieceColor(char pType) {
     }
 }
 
+// Kiểm tra va chạm khi xoay (Cực kỳ quan trọng)
+bool canRotate() {
+    char temp[4][4];
+    // Thuật toán xoay thử ma trận 4x4
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            temp[i][j] = currentPiece->getShape(3 - j, i);
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (temp[i][j] != ' ') {
+                int tx = currentPiece->getX() + j;
+                int ty = currentPiece->getY() + i;
+                // Kiểm tra biên theo tọa độ UI mới
+                if (tx < 0 || tx >= W || ty >= H || ty < 0) return false;
+                if (board[ty][tx] != ' ') return false;
+            }
+        }
+    }
+    return true;
+}
+
 void setup() {
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_CURSOR_INFO cursorInfo;
@@ -60,7 +81,6 @@ void setup() {
     for (int i = 0; i < H; i++) 
         for (int j = 0; j < W; j++) 
             board[i][j] = ' ';
-            
     score = 0; level = 1; speed = 1000; linesCleared = 0;
     srand((unsigned int)time(0));
 }
@@ -80,7 +100,6 @@ void drawOuterFrame() {
     setColor(COLOR_WHITE, COLOR_BLACK);
     gotoxy(OFFSET_X - 1, OFFSET_Y - 1);
     cout << (char)201; for (int i = 0; i < W * 2; i++) cout << (char)205; cout << (char)187;
-
     for (int i = 0; i < H; i++) {
         gotoxy(OFFSET_X - 1, OFFSET_Y + i); cout << (char)186; 
         for (int j = 0; j < W; j++) {
@@ -90,7 +109,6 @@ void drawOuterFrame() {
         setColor(COLOR_WHITE, COLOR_BLACK);
         gotoxy(OFFSET_X + W * 2, OFFSET_Y + i); cout << (char)186; 
     }
-
     gotoxy(OFFSET_X - 1, OFFSET_Y + H);
     cout << (char)200; for (int i = 0; i < W * 2; i++) cout << (char)205; cout << (char)188; 
 }
@@ -156,11 +174,9 @@ void block2Board() {
 }
 
 void updateBoardUI() {
-    for (int i = 0; i < H; i++) {
-        for (int j = 0; j < W; j++) {
+    for (int i = 0; i < H; i++) 
+        for (int j = 0; j < W; j++) 
             drawBlock(j, i, board[i][j]);
-        }
-    }
 }
 
 void checkLines() {
@@ -196,24 +212,21 @@ int main() {
     system("cls");
     drawOuterFrame();
     drawStats();
-    
-    currentPiece = createRandomPiece(); // Sử dụng hàm từ Factory
+        currentPiece = createRandomPiece();
 
     clock_t start = clock();
     while (1) {
-        // 1. Xử lý phím bấm
         if (_kbhit()) {
             char c = _getch();
             clearCurrentPiece(); 
             if (c == 'a' && canMove(-1, 0)) currentPiece->moveLeft();
             if (c == 'd' && canMove(1, 0)) currentPiece->moveRight();
-            if (c == 'w') currentPiece->rotate(); 
+            if (c == 'w' && canRotate()) currentPiece->rotate(); // Thêm check va chạm khi xoay
             if (c == 's' && canMove(0, 1)) currentPiece->moveDown();
             if (c == 'q') break;
             drawCurrentPiece(); 
         }
 
-        // 2. Rơi tự động
         if (clock() - start > speed) {
             clearCurrentPiece();
             if (canMove(0, 1)) {
@@ -237,5 +250,6 @@ int main() {
         }
     }
     delete currentPiece;
+    currentPiece = nullptr;
     return 0;
 }
