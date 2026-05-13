@@ -237,6 +237,7 @@ int main() {
     system("cls");
     drawOuterFrame();
     drawStats();
+    currentPiece = createRandomPiece();
 
     clock_t start = clock();
     while (1) {
@@ -250,13 +251,38 @@ int main() {
             if (c == 'q') break;
             drawCurrentPiece(); 
         }
-
-        if (clock() - start > speed) {
-            clearCurrentPiece();
+          if (clock() - start > speed) {
+            clearCurrentPiece(); 
             if (canMove(0, 1)) {
                 currentPiece->moveDown();
-                drawCurrentPiece();
+                drawCurrentPiece(); 
+            } 
+            else {
+                drawCurrentPiece(); 
+                block2Board();      
+                
+                checkLines(); 
+
+                delete currentPiece;
+                currentPiece = createRandomPiece(); 
+
+                // KIỂM TRA GAME OVER
+                if (!canMove(0, 0)) {
+                    int goX = OFFSET_X + W / 2 + 1;
+                    int goY = OFFSET_Y + H / 2 - 1;
+                    setColor(COLOR_RED, COLOR_BLACK);
+                    gotoxy(goX - 2, goY - 1); cout << (char)201 << "═════════════" << (char)187;
+                    gotoxy(goX - 2, goY);     cout << (char)186 << "  GAME OVER! " << (char)186;
+                    gotoxy(goX - 2, goY + 1); cout << (char)200 << "═════════════" << (char)188;
+                    
+                    setColor(COLOR_WHITE, COLOR_BLACK);
+                    gotoxy(0, OFFSET_Y + H + 2);
+                    system("pause");
+                    break;
+                }
             }
+            start = clock(); 
+        }
             else {
                 drawCurrentPiece(); 
                 block2Board();
@@ -287,5 +313,6 @@ int main() {
             start = clock();
         }
     }
+    delete currentPiece;
     return 0;
 }
