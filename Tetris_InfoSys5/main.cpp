@@ -184,7 +184,7 @@ int main()
     system("cls");
     initBoard();
 
-    currentPiece = new PieceT();
+    currentPiece = createRandomPiece();
 
     while (1)
     {
@@ -214,7 +214,7 @@ int main()
             updateLevelAndSpeed(lines);
 
             delete currentPiece;
-            currentPiece = new PieceT();
+            currentPiece = createRandomPiece();
             // Logic Game Over từ nhánh main
             // Chỉnh tọa độ thông báo Game Over cho khớp UI mới
             if (!canMove(0, 0))
@@ -230,5 +230,6 @@ int main()
         // Sử dụng biến speed thay cho giá trị cố định
         Sleep(speed);
     }
+    delete currentPiece;
     return 0;
 }
