@@ -1,4 +1,6 @@
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <conio.h>
 #include <windows.h>
 #include <time.h>
@@ -104,10 +106,10 @@ void draw()
     gotoxy(W * 2 + 3, 4);
     cout << "╠════════════╣";
     gotoxy(W * 2 + 3, 5);
-    cout << "║ SCORE: " << score << "\t ║";
+    cout << "║ SCORE: " << left << setw(3) << score << "║";
     // Hiển thị Level ra màn hình
     gotoxy(W * 2 + 3, 6);
-    cout << "║ LEVEL: " << level << "\t ║";
+    cout << "║ LEVEL: " << left << setw(3) << level << "║";
     gotoxy(W * 2 + 3, 7);
     cout << "╚════════════╝";
     setColor(7);
@@ -197,7 +199,7 @@ int main()
             if (c == 'd' && canMove(1, 0))
                 currentPiece->moveRight();
             if (c == 'w')
-                currentPiece->rotate(); 
+                currentPiece->rotate();
             if (c == 's' && canMove(0, 1))
                 currentPiece->moveDown();
             if (c == 'q')
