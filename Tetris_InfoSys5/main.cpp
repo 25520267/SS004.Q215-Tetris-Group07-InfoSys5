@@ -189,6 +189,22 @@ int removeLine()
     }
     return linesCleared;
 }
+// Sinh ngẫu nhiên một trong 7 loại khối gạch
+Piece* spawnRandom()
+{
+    int r = rand() % 7;
+    switch (r)
+    {
+        case 0: return new PieceT();
+        case 1: return new PieceL();
+        case 2: return new PieceJ();
+        case 3: return new PieceS();
+        case 4: return new PieceZ();
+        case 5: return new PieceI();
+        case 6: return new PieceO();
+    }
+    return new PieceT(); // Mặc định
+}
 
 // Tách hàm cập nhật Cấp độ và Tốc độ
 void updateLevelAndSpeed(int lines)
