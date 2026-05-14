@@ -129,7 +129,7 @@ void drawCurrentPiece() {
                 int px = currentPiece->getX() + j;
                 int py = currentPiece->getY() + i;
                 if (py >= 0 && py < H && px >= 0 && px < W) 
-                    drawBlock(px, py, '#'); 
+                    drawBlock(px, py, currentPiece->getShape(i,j)); 
             }
         }
     }
@@ -167,7 +167,7 @@ void block2Board() {
         for (int j = 0; j < 4; j++) {
             if (currentPiece->getShape(i, j) != ' ') {
                 if (currentPiece->getY() + i >= 0)
-                    board[currentPiece->getY() + i][currentPiece->getX() + j] = '#'; 
+                    board[currentPiece->getY() + i][currentPiece->getX() + j] = currentPiece->getShape(i,j); 
             }
         }
     }
