@@ -2,6 +2,7 @@
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
+#include <fstream>
 using namespace std;
 
 inline void menuGotoXY(int x, int y) {
@@ -15,10 +16,23 @@ inline void menuSetColor(int foreground) {
 
 inline int runMenu() {
     int selectedLevel = 1;
+    int highScore = 0;
+    int highLevel = 1;
+
+    // Doc diem cao nhat tu file
+    ifstream file("highscore.txt");
+    if (file.is_open()) {
+        file >> highScore >> highLevel;
+        file.close();
+    }
 
     while (true) {
         system("cls"); 
         
+        // VE DIEM CAO NHAT
+        menuSetColor(15); 
+        menuGotoXY(24, 5); cout << "HIGH SCORE: " << highScore;
+
         // 1. VE GIAO DIEN MENU VOI MAU SAC
         menuSetColor(11);
         menuGotoXY(20, 8);  cout << "=======================";
@@ -37,9 +51,9 @@ inline int runMenu() {
         menuGotoXY(25, 17); cout << "[ 3. EXIT ]";
         
         menuSetColor(15);
-        menuGotoXY(15, 21); cout << "Nhan phim 1 de vao game";
-        menuGotoXY(15, 22); cout << "Nhan phim 2 de tang level";
-        menuGotoXY(15, 23); cout << "Nhan phim 3 de thoat game";
+        menuGotoXY(18, 21); cout << "Nhan phim 1 de vao game";
+        menuGotoXY(18, 22); cout << "Nhan phim 2 de tang level";
+        menuGotoXY(18, 23); cout << "Nhan phim 3 de thoat game";
 
         // 2. VONG LAP CHO BAN PHIM 
         bool waitingForInput = true;

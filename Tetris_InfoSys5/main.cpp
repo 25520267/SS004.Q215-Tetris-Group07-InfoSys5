@@ -228,14 +228,25 @@ int main() {
     clock_t start = clock();
     while (1) {
         if (_kbhit()) {
-            char c = _getch();
-            clearCurrentPiece(); 
-            if (c == 'a' && canMove(-1, 0)) currentPiece->moveLeft();
-            if (c == 'd' && canMove(1, 0)) currentPiece->moveRight();
-            if (c == 'w' && canRotate()) currentPiece->rotate(); // Thêm check va chạm khi xoay
-            if (c == 's' && canMove(0, 1)) currentPiece->moveDown();
-            if (c == 'q') break;
-            drawCurrentPiece(); 
+            int c = _getch();
+            if (c == 224 || c == 0) { // Nếu bấm Phím Mũi Tên, hệ thống sẽ gửi 2 mã
+                c = _getch(); // Đọc mã thứ 2 để biết hướng
+                clearCurrentPiece(); 
+                if (c == 75 && canMove(-1, 0)) currentPiece->moveLeft();  
+                if (c == 77 && canMove(1, 0)) currentPiece->moveRight();  
+                if (c == 72 && canRotate()) currentPiece->rotate();       
+                if (c == 80 && canMove(0, 1)) currentPiece->moveDown();   
+                drawCurrentPiece(); 
+            } else {
+                c = tolower(c); 
+                clearCurrentPiece(); 
+                if (c == 'a' && canMove(-1, 0)) currentPiece->moveLeft();
+                if (c == 'd' && canMove(1, 0)) currentPiece->moveRight();
+                if (c == 'w' && canRotate()) currentPiece->rotate(); 
+                if (c == 's' && canMove(0, 1)) currentPiece->moveDown();
+                if (c == 'q') break;
+                drawCurrentPiece(); 
+            }
         }
 
         if (clock() - start > speed) {
@@ -254,6 +265,25 @@ int main() {
                     gotoxy(OFFSET_X + W / 2 - 5, OFFSET_Y + H / 2);
                     setColor(COLOR_RED, COLOR_BLACK);
                     cout << " GAME OVER! ";
+                    
+                    // --- LUU DIEM CAO NHAT (HIGH SCORE) ---
+                    int currentHighScore = 0, currentHighLevel = 1;
+                    ifstream inFile("highscore.txt");
+                    if (inFile.is_open()) {
+                        inFile >> currentHighScore >> currentHighLevel;
+                        inFile.close();
+                    }
+                    
+                    // Neu diem hien tai cao hon diem ky luc, thi luu de file
+                    if (score > currentHighScore) {
+                        ofstream outFile("highscore.txt");
+                        if (outFile.is_open()) {
+                            outFile << score << " " << level;
+                            outFile.close();
+                        }
+                    }
+                    // --------------------------------------
+
                     break;
                 }
             }
