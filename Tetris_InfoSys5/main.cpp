@@ -219,6 +219,7 @@ int main() {
     
     // Ap dung Level va Toc do tu Menu
     level = choice;
+    linesCleared = (level - 1) * 10; // Dong bo so dong da xoa voi level
     speed = max(100, 1000 - (level - 1) * 100);
     system("cls");
     drawOuterFrame();
