@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <time.h>
 #include <string>
+#include "Menu.h"
 #include "Blocks.h"
 
 using namespace std;
@@ -208,7 +209,17 @@ void checkLines() {
 int main() {
     system("mode con cols=60 lines=26");
     SetConsoleTitleA("Tetris InfoSys5 - Reworked UI");
+
+    int choice = runMenu(); 
+    if (choice == 0) {
+        return 0; 
+    }
+
     setup();
+    
+    // Ap dung Level va Toc do tu Menu
+    level = choice;
+    speed = max(100, 1000 - (level - 1) * 100);
     system("cls");
     drawOuterFrame();
     drawStats();
