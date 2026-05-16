@@ -247,6 +247,8 @@ int main() {
             clearCurrentPiece();
             if (canMove(0, 1)) {
                 currentPiece->moveDown();
+                int newGhostYTimer = TetrisFeatures::getGhostY(currentPiece, board);
+                TetrisFeatures::drawGhost(currentPiece, newGhostYTimer, OFFSET_X, OFFSET_Y);
                 drawCurrentPiece();
             } else {
                 drawCurrentPiece(); 
