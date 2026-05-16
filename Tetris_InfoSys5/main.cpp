@@ -6,6 +6,7 @@
 #include <time.h>
 #include <string>
 #include "Blocks.h"
+#include "ghost-and-harddrop.h"
 
 using namespace std;
 
@@ -212,7 +213,11 @@ int main() {
     system("cls");
     drawOuterFrame();
     drawStats();
-        currentPiece = createRandomPiece();
+    currentPiece = createRandomPiece();
+
+    int initGhostY = TetrisFeatures::getGhostY(currentPiece, board);
+    TetrisFeatures::drawGhost(currentPiece, initGhostY, OFFSET_X, OFFSET_Y);
+    drawCurrentPiece();
 
     clock_t start = clock();
     while (1) {
