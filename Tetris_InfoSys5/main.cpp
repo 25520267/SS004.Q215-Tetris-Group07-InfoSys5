@@ -242,6 +242,8 @@ int main() {
         }
 
         if (clock() - start > speed) {
+            int oldGhostYTimer = TetrisFeatures::getGhostY(currentPiece, board);
+            TetrisFeatures::clearGhost(currentPiece, oldGhostYTimer, OFFSET_X, OFFSET_Y);
             clearCurrentPiece();
             if (canMove(0, 1)) {
                 currentPiece->moveDown();
