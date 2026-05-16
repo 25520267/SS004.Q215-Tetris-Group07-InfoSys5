@@ -17,6 +17,7 @@ const int OFFSET_Y = 1;
 
 char board[H][W] = {};
 Piece *currentPiece = nullptr;
+Piece *nextPiece = nullptr;
 
 int score = 0;
 int level = 1;      
@@ -118,8 +119,52 @@ void drawStats() {
     int statsY = OFFSET_Y + 1;
     gotoxy(statsX, statsY - 1); setColor(COLOR_CYAN, COLOR_BLACK); cout << "== TETRIS INFOSYS 5 ==";
     setColor(COLOR_WHITE, COLOR_BLACK);
-    gotoxy(statsX, statsY + 1); cout << "SCORE: " << score;
-    gotoxy(statsX, statsY + 2); cout << "LEVEL: " << level;
+    gotoxy(statsX, statsY + 1); cout << "SCORE: " << score << "    ";
+    gotoxy(statsX, statsY + 2); cout << "LEVEL: " << level << "    ";
+}
+
+// --- Vẽ khung NEXT PIECE ở góc phải ---
+void drawNextPiece() {
+    if (!nextPiece) return;
+
+    int boxX = OFFSET_X + W * 2 + 4; // Vị trí X của khung
+    int boxY = OFFSET_Y + 5;          // Vị trí Y (bên dưới Stats)
+    int boxW = 10;                     // Chiều rộng khung (5 ô * 2 ký tự)
+
+    // Tiêu đề
+    setColor(COLOR_CYAN, COLOR_BLACK);
+    gotoxy(boxX, boxY); cout << "  NEXT";
+
+    // Viền trên
+    setColor(COLOR_WHITE, COLOR_BLACK);
+    gotoxy(boxX, boxY + 1);
+    cout << (char)218; for (int i = 0; i < boxW; i++) cout << (char)196; cout << (char)191;
+
+    // Nội dung 4 dòng (vẽ shape của nextPiece)
+    for (int i = 0; i < 4; i++) {
+        gotoxy(boxX, boxY + 2 + i);
+        setColor(COLOR_WHITE, COLOR_BLACK);
+        cout << (char)179; // Viền trái
+        for (int j = 0; j < 4; j++) {
+            char c = nextPiece->getShape(i, j);
+            if (c != ' ') {
+                int color = getPieceColor(c);
+                setColor(COLOR_BLACK, color); cout << "  ";
+                setColor(COLOR_WHITE, COLOR_BLACK);
+            } else {
+                setColor(COLOR_BLACK, COLOR_BLACK); cout << "  ";
+                setColor(COLOR_WHITE, COLOR_BLACK);
+            }
+        }
+        // Padding thêm nếu boxW > 8
+        cout << "  ";
+        cout << (char)179; // Viền phải
+    }
+
+    // Viền dưới
+    setColor(COLOR_WHITE, COLOR_BLACK);
+    gotoxy(boxX, boxY + 6);
+    cout << (char)192; for (int i = 0; i < boxW; i++) cout << (char)196; cout << (char)217;
 }
 
 void drawCurrentPiece() {
@@ -212,7 +257,11 @@ int main() {
     system("cls");
     drawOuterFrame();
     drawStats();
-        currentPiece = createRandomPiece();
+
+    // Khởi tạo khối đầu tiên và khối kế tiếp từ túi 7-bag
+    currentPiece = getNextPieceFromBag();
+    nextPiece = getNextPieceFromBag();
+    drawNextPiece();
 
     clock_t start = clock();
     while (1) {
@@ -237,7 +286,9 @@ int main() {
                 block2Board(); 
                 checkLines(); 
                 delete currentPiece;
-                currentPiece = createRandomPiece(); 
+                currentPiece = nextPiece;             // Khối kế tiếp trở thành khối hiện tại
+                nextPiece = getNextPieceFromBag();     // Lấy khối mới từ túi 7-bag
+                drawNextPiece();                       // Cập nhật khung NEXT
 
                 if (!canMove(0, 0)) {
                     gotoxy(OFFSET_X + W / 2 - 5, OFFSET_Y + H / 2);
@@ -251,5 +302,7 @@ int main() {
     }
     delete currentPiece;
     currentPiece = nullptr;
+    delete nextPiece;
+    nextPiece = nullptr;
     return 0;
 }
