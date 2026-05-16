@@ -10,23 +10,23 @@
 using namespace std;
 
 // --- ĐỊNH NGHĨA KÍCH THƯỚC UI ---
-const int W = 12; 
-const int H = 22; 
-const int OFFSET_X = 2; 
-const int OFFSET_Y = 1; 
+const int W = 12;
+const int H = 22;
+const int OFFSET_X = 2;
+const int OFFSET_Y = 1;
 
 char board[H][W] = {};
 Piece *currentPiece = nullptr;
 
 int score = 0;
-int level = 1;      
-int linesCleared = 0; 
-int speed = 1000;    
+int level = 1;
+int linesCleared = 0;
+int speed = 1000;
 
 enum TetrisColor {
-    COLOR_BLACK = 0, COLOR_CYAN = 11, COLOR_YELLOW = 14, 
-    COLOR_PURPLE = 13, COLOR_GREEN = 10, COLOR_RED = 12, 
-    COLOR_BLUE = 9, COLOR_ORANGE = 6, COLOR_WHITE = 15, COLOR_GRAY = 8     
+    COLOR_BLACK = 0, COLOR_CYAN = 11, COLOR_YELLOW = 14,
+    COLOR_PURPLE = 13, COLOR_GREEN = 10, COLOR_RED = 12,
+    COLOR_BLUE = 9, COLOR_ORANGE = 6, COLOR_WHITE = 15, COLOR_GRAY = 8
 };
 
 void gotoxy(int x, int y) {
@@ -44,7 +44,7 @@ int getPieceColor(char pType) {
         case 'I': return COLOR_CYAN;   case 'O': return COLOR_YELLOW;
         case 'T': return COLOR_PURPLE; case 'S': return COLOR_GREEN;
         case 'Z': return COLOR_RED;    case 'J': return COLOR_BLUE;
-        case 'L': return COLOR_ORANGE; case '#': return COLOR_WHITE; 
+        case 'L': return COLOR_ORANGE; case '#': return COLOR_WHITE;
         default: return COLOR_WHITE;
     }
 }
@@ -78,8 +78,8 @@ void setup() {
     cursorInfo.bVisible = false;
     SetConsoleCursorInfo(out, &cursorInfo);
 
-    for (int i = 0; i < H; i++) 
-        for (int j = 0; j < W; j++) 
+    for (int i = 0; i < H; i++)
+        for (int j = 0; j < W; j++)
             board[i][j] = ' ';
     score = 0; level = 1; speed = 1000; linesCleared = 0;
     srand((unsigned int)time(0));
@@ -88,11 +88,11 @@ void setup() {
 void drawBlock(int boardX, int boardY, char type) {
     gotoxy(OFFSET_X + boardX * 2, OFFSET_Y + boardY);
     if (type == ' ') {
-        setColor(COLOR_GRAY, COLOR_BLACK); cout << ". "; 
+        setColor(COLOR_GRAY, COLOR_BLACK); cout << ". ";
     } else {
         int color = getPieceColor(type);
-        setColor(COLOR_BLACK, color); cout << "  "; 
-        setColor(COLOR_WHITE, COLOR_BLACK); 
+        setColor(COLOR_BLACK, color); cout << "  ";
+        setColor(COLOR_WHITE, COLOR_BLACK);
     }
 }
 
@@ -101,16 +101,16 @@ void drawOuterFrame() {
     gotoxy(OFFSET_X - 1, OFFSET_Y - 1);
     cout << (char)201; for (int i = 0; i < W * 2; i++) cout << (char)205; cout << (char)187;
     for (int i = 0; i < H; i++) {
-        gotoxy(OFFSET_X - 1, OFFSET_Y + i); cout << (char)186; 
+        gotoxy(OFFSET_X - 1, OFFSET_Y + i); cout << (char)186;
         for (int j = 0; j < W; j++) {
             if (board[i][j] == ' ') { setColor(COLOR_GRAY, COLOR_BLACK); cout << ". "; }
             else drawBlock(j, i, board[i][j]);
         }
         setColor(COLOR_WHITE, COLOR_BLACK);
-        gotoxy(OFFSET_X + W * 2, OFFSET_Y + i); cout << (char)186; 
+        gotoxy(OFFSET_X + W * 2, OFFSET_Y + i); cout << (char)186;
     }
     gotoxy(OFFSET_X - 1, OFFSET_Y + H);
-    cout << (char)200; for (int i = 0; i < W * 2; i++) cout << (char)205; cout << (char)188; 
+    cout << (char)200; for (int i = 0; i < W * 2; i++) cout << (char)205; cout << (char)188;
 }
 
 void drawStats() {
@@ -128,8 +128,8 @@ void drawCurrentPiece() {
             if (currentPiece->getShape(i, j) != ' ') {
                 int px = currentPiece->getX() + j;
                 int py = currentPiece->getY() + i;
-                if (py >= 0 && py < H && px >= 0 && px < W) 
-                    drawBlock(px, py, currentPiece->getShape(i,j)); 
+                if (py >= 0 && py < H && px >= 0 && px < W)
+                    drawBlock(px, py, currentPiece->getShape(i,j));
             }
         }
     }
@@ -141,8 +141,8 @@ void clearCurrentPiece() {
             if (currentPiece->getShape(i, j) != ' ') {
                 int px = currentPiece->getX() + j;
                 int py = currentPiece->getY() + i;
-                if (py >= 0 && py < H && px >= 0 && px < W) 
-                    drawBlock(px, py, ' '); 
+                if (py >= 0 && py < H && px >= 0 && px < W)
+                    drawBlock(px, py, ' ');
             }
         }
     }
@@ -167,15 +167,15 @@ void block2Board() {
         for (int j = 0; j < 4; j++) {
             if (currentPiece->getShape(i, j) != ' ') {
                 if (currentPiece->getY() + i >= 0)
-                    board[currentPiece->getY() + i][currentPiece->getX() + j] = currentPiece->getShape(i,j); 
+                    board[currentPiece->getY() + i][currentPiece->getX() + j] = currentPiece->getShape(i,j);
             }
         }
     }
 }
 
 void updateBoardUI() {
-    for (int i = 0; i < H; i++) 
-        for (int j = 0; j < W; j++) 
+    for (int i = 0; i < H; i++)
+        for (int j = 0; j < W; j++)
             drawBlock(j, i, board[i][j]);
 }
 
@@ -188,11 +188,11 @@ void checkLines() {
         }
         if (full) {
             combo++;
-            for (int k = i; k > 0; k--) 
-                for (int j = 0; j < W; j++) 
+            for (int k = i; k > 0; k--)
+                for (int j = 0; j < W; j++)
                     board[k][j] = board[k - 1][j];
             for (int j = 0; j < W; j++) board[0][j] = ' ';
-            i++; 
+            i++;
         }
     }
     if (combo > 0) {
@@ -201,7 +201,7 @@ void checkLines() {
         level = (linesCleared / 10) + 1;
         speed = max(100, 1000 - (level - 1) * 100);
         updateBoardUI();
-        drawStats(); 
+        drawStats();
     }
 }
 
@@ -212,19 +212,27 @@ int main() {
     system("cls");
     drawOuterFrame();
     drawStats();
-        currentPiece = createRandomPiece();
+    currentPiece = createRandomPiece();
 
     clock_t start = clock();
     while (1) {
         if (_kbhit()) {
             char c = _getch();
-            clearCurrentPiece(); 
+            clearCurrentPiece();
             if (c == 'a' && canMove(-1, 0)) currentPiece->moveLeft();
             if (c == 'd' && canMove(1, 0)) currentPiece->moveRight();
-            if (c == 'w' && canRotate()) currentPiece->rotate(); // Thêm check va chạm khi xoay
+            if (c == 'w' && canRotate()) {
+                if (canRotate()) {
+                    // Trường hợp lý tưởng: Xoay bình thường không vướng gì
+                    currentPiece->rotate();
+                }
+                else {
+
+                }
+            }
             if (c == 's' && canMove(0, 1)) currentPiece->moveDown();
             if (c == 'q') break;
-            drawCurrentPiece(); 
+            drawCurrentPiece();
         }
 
         if (clock() - start > speed) {
@@ -233,11 +241,11 @@ int main() {
                 currentPiece->moveDown();
                 drawCurrentPiece();
             } else {
-                drawCurrentPiece(); 
-                block2Board(); 
-                checkLines(); 
+                drawCurrentPiece();
+                block2Board();
+                checkLines();
                 delete currentPiece;
-                currentPiece = createRandomPiece(); 
+                currentPiece = createRandomPiece();
 
                 if (!canMove(0, 0)) {
                     gotoxy(OFFSET_X + W / 2 - 5, OFFSET_Y + H / 2);
