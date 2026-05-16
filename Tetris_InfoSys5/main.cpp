@@ -236,6 +236,8 @@ int main() {
                 start = clock() - speed; 
             }
             if (c == 'q') break;
+            int newGhostY = TetrisFeatures::getGhostY(currentPiece, board);
+            TetrisFeatures::drawGhost(currentPiece, newGhostY, OFFSET_X, OFFSET_Y);
             drawCurrentPiece(); 
         }
 
