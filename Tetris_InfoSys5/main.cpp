@@ -217,8 +217,6 @@ void checkLines() {
         linesCleared += combo;
         level = (linesCleared / 10) + 1;
         speed = max(100, 1000 - (level - 1) * 100);
-        updateBoardUI();
-        drawStats();
     }
 }
 
@@ -226,46 +224,41 @@ int main() {
     system("mode con cols=60 lines=26");
     SetConsoleTitleA("Tetris InfoSys5 - Reworked UI");
     setup();
-    system("cls");
-    drawOuterFrame();
-    drawStats();
     currentPiece = createRandomPiece();
 
     clock_t start = clock();
     while (1) {
         if (_kbhit()) {
             char c = _getch();
-            clearCurrentPiece();
             if (c == 'a' && canMove(-1, 0)) currentPiece->moveLeft();
             if (c == 'd' && canMove(1, 0)) currentPiece->moveRight();
-            if (c == 'w' && canRotate()) {
-                if (canRotate()) {
-                    // Trường hợp lý tưởng: Xoay bình thường không vướng gì
-                    currentPiece->rotate();
-                }
+            if (c == 'w') {
+                if (canRotate()) currentPiece->rotate();
                 else {
-                    // Bắt đầu thử Wall Kick: Thử đẩy sang phải 1 ô
                     currentPiece->moveRight();
-                    if (canRotate()) {
-                    // Kick thành công! Đẩy sang phải thì xoay được
-                    currentPiece->rotate();
-                    }
+                    if (canRotate()) currentPiece->rotate();
                     else {
-                        // Đẩy sang phải vẫn không xoay được.
-                        // Trả lại vị trí cũ ngay lập tức.
-                        currentPiece->moveLeft();
-                        // Em có thể viết thêm logic: Thử đẩy sang trái (moveLeft) ở đây
-                        // nếu đẩy sang phải thất bại.
+                        currentPiece->moveRight();
+                        if (canRotate()) currentPiece->rotate();
+                        else {
+                            currentPiece->moveLeft(); currentPiece->moveLeft(); currentPiece->moveLeft();
+                            if (canRotate()) currentPiece->rotate();
+                            else {
+                                currentPiece->moveLeft();
+                                if (canRotate()) currentPiece->rotate();
+                                else {
+                                    currentPiece->moveRight(); currentPiece->moveRight();
+                                }
+                            }
+                        }
                     }
                 }
             }
             if (c == 's' && canMove(0, 1)) currentPiece->moveDown();
             if (c == 'q') break;
-            drawCurrentPiece();
         }
 
         if (clock() - start > speed) {
-            clearCurrentPiece();
             if (canMove(0, 1)) {
                 currentPiece->moveDown();
                 drawCurrentPiece();
@@ -277,14 +270,25 @@ int main() {
                 currentPiece = createRandomPiece();
 
                 if (!canMove(0, 0)) {
-                    gotoxy(OFFSET_X + W / 2 - 5, OFFSET_Y + H / 2);
-                    setColor(COLOR_RED, COLOR_BLACK);
-                    cout << " GAME OVER! ";
+                    // Xử lý đồ họa kết thúc Game
+                    clearBuffer();
+                    drawOuterFrame();
+                    drawCurrentPiece();
+                    writeStringToBuffer(OFFSET_X + W - 3, OFFSET_Y + H / 2, " GAME OVER! ", (COLOR_BLACK << 4) | COLOR_RED);
+                    renderScreen();
+                    _getch(); // Đợi nhấn phím rồi mới thoát
                     break;
                 }
             }
             start = clock();
         }
+        // CHỈ GỌI VẼ BẰNG NHỮNG HÀM CỦA BUFFER
+        clearBuffer();
+        drawOuterFrame();
+        drawStats();
+        drawCurrentPiece();
+        renderScreen(); // Tung toàn bộ bản nháp ra màn hình trong 1 nhịp
+        Sleep(10); // Cho CPU nghỉ
     }
     delete currentPiece;
     currentPiece = nullptr;
