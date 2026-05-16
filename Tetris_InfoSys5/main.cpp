@@ -29,15 +29,40 @@ enum TetrisColor {
     COLOR_BLUE = 9, COLOR_ORANGE = 6, COLOR_WHITE = 15, COLOR_GRAY = 8
 };
 
-void gotoxy(int x, int y) {
-    COORD c = {(SHORT)x, (SHORT)y};
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+//KHỞI TẠO HỆ THỐNG DOUBLE BUFFERING BẰNG WINDOWS API
+//Khai báo mảng đệm (Buffer) và các hàm công cụ thay thế cho gotoxy/cout.
+const int SCREEN_WIDTH = 60;
+const int SCREEN_HEIGHT = 26;
+CHAR_INFO screenBuffer[SCREEN_WIDTH * SCREEN_HEIGHT];
+HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+void clearBuffer() {
+    for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
+        screenBuffer[i].Char.AsciiChar = ' ';
+        screenBuffer[i].Attributes = COLOR_BLACK;
+    }
 }
 
-void setColor(int foreground, int background = 0) {
-    WORD wAttributes = (background << 4) | foreground;
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), wAttributes);
+void drawCharToBuffer(int x, int y, char c, WORD color) {
+    if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT) {
+        screenBuffer[y * SCREEN_WIDTH + x].Char.AsciiChar = c;
+        screenBuffer[y * SCREEN_WIDTH + x].Attributes = color;
+    }
 }
+
+void writeStringToBuffer(int x, int y, string str, WORD color) {
+    for (size_t i = 0; i < str.length(); i++) {
+        drawCharToBuffer(x + i, y, str[i], color);
+    }
+}
+
+void renderScreen() {
+    COORD bufferSize = { (SHORT)SCREEN_WIDTH, (SHORT)SCREEN_HEIGHT };
+    COORD characterPos = { 0, 0 };
+    SMALL_RECT writeArea = { 0, 0, (SHORT)(SCREEN_WIDTH - 1), (SHORT)(SCREEN_HEIGHT - 1) };
+    WriteConsoleOutputA(hConsole, screenBuffer, bufferSize, characterPos, &writeArea);
+}
+
 
 int getPieceColor(char pType) {
     switch (pType) {
