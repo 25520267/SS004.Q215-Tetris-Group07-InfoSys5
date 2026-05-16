@@ -153,7 +153,10 @@ void drawStats() {
     writeStringToBuffer(statsX, statsY + 2, "LEVEL: " + to_string(level), (COLOR_BLACK << 4) | COLOR_WHITE);
 }
 
+// CHUYỂN KHỐI GẠCH RƠI SANG BUFFER VÀ XÓA HÀM DƯ THỪA
+// Ý nghĩa: Cập nhật hàm drawCurrentPiece. Xóa bỏ các hàm clearCurrentPiece() và updateBoardUI() cũ.
 void drawCurrentPiece() {
+    if (!currentPiece) return;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             if (currentPiece->getShape(i, j) != ' ') {
@@ -161,19 +164,6 @@ void drawCurrentPiece() {
                 int py = currentPiece->getY() + i;
                 if (py >= 0 && py < H && px >= 0 && px < W)
                     drawBlock(px, py, currentPiece->getShape(i,j));
-            }
-        }
-    }
-}
-
-void clearCurrentPiece() {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (currentPiece->getShape(i, j) != ' ') {
-                int px = currentPiece->getX() + j;
-                int py = currentPiece->getY() + i;
-                if (py >= 0 && py < H && px >= 0 && px < W)
-                    drawBlock(px, py, ' ');
             }
         }
     }
@@ -204,11 +194,7 @@ void block2Board() {
     }
 }
 
-void updateBoardUI() {
-    for (int i = 0; i < H; i++)
-        for (int j = 0; j < W; j++)
-            drawBlock(j, i, board[i][j]);
-}
+
 
 void checkLines() {
     int combo = 0;
