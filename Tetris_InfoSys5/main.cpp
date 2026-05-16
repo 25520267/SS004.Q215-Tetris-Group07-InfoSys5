@@ -223,6 +223,8 @@ int main() {
     while (1) {
         if (_kbhit()) {
             char c = _getch();
+            int oldGhostY = TetrisFeatures::getGhostY(currentPiece, board);
+            TetrisFeatures::clearGhost(currentPiece, oldGhostY, OFFSET_X, OFFSET_Y);
             clearCurrentPiece(); 
             if (c == 'a' && canMove(-1, 0)) currentPiece->moveLeft();
             if (c == 'd' && canMove(1, 0)) currentPiece->moveRight();
