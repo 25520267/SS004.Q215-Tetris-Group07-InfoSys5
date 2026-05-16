@@ -110,41 +110,47 @@ void setup() {
     srand((unsigned int)time(0));
 }
 
+// CHUYỂN GIAO DIỆN TĨNH SANG BỘ ĐỆM (BUFFER)
+// Ý nghĩa: Sửa hàm drawBlock (kết hợp màu nền), vẽ khung và thông số để nạp vào Buffer
 void drawBlock(int boardX, int boardY, char type) {
-    gotoxy(OFFSET_X + boardX * 2, OFFSET_Y + boardY);
+    int sx = OFFSET_X + boardX * 2;
+    int sy = OFFSET_Y + boardY;
     if (type == ' ') {
-        setColor(COLOR_GRAY, COLOR_BLACK); cout << ". ";
+        WORD attr = (COLOR_BLACK << 4) | COLOR_GRAY; // Nền đen, chữ xám
+        drawCharToBuffer(sx, sy, '.', attr);
+        drawCharToBuffer(sx + 1, sy, ' ', attr);
     } else {
         int color = getPieceColor(type);
-        setColor(COLOR_BLACK, color); cout << "  ";
-        setColor(COLOR_WHITE, COLOR_BLACK);
+        WORD attr = (color << 4) | COLOR_BLACK;      // Nền màu gạch, chữ đen
+        drawCharToBuffer(sx, sy, ' ', attr);
+        drawCharToBuffer(sx + 1, sy, ' ', attr);
     }
 }
 
 void drawOuterFrame() {
-    setColor(COLOR_WHITE, COLOR_BLACK);
-    gotoxy(OFFSET_X - 1, OFFSET_Y - 1);
-    cout << (char)201; for (int i = 0; i < W * 2; i++) cout << (char)205; cout << (char)187;
+    WORD frameColor = (COLOR_BLACK << 4) | COLOR_WHITE;
+
+    drawCharToBuffer(OFFSET_X - 1, OFFSET_Y - 1, (char)201, frameColor);
+    for (int i = 0; i < W * 2; i++) drawCharToBuffer(OFFSET_X + i, OFFSET_Y - 1, (char)205, frameColor);
+    drawCharToBuffer(OFFSET_X + W * 2, OFFSET_Y - 1, (char)187, frameColor);
     for (int i = 0; i < H; i++) {
-        gotoxy(OFFSET_X - 1, OFFSET_Y + i); cout << (char)186;
+        drawCharToBuffer(OFFSET_X - 1, OFFSET_Y + i, (char)186, frameColor);
         for (int j = 0; j < W; j++) {
-            if (board[i][j] == ' ') { setColor(COLOR_GRAY, COLOR_BLACK); cout << ". "; }
-            else drawBlock(j, i, board[i][j]);
+            drawBlock(j, i, board[i][j]);
         }
-        setColor(COLOR_WHITE, COLOR_BLACK);
-        gotoxy(OFFSET_X + W * 2, OFFSET_Y + i); cout << (char)186;
+        drawCharToBuffer(OFFSET_X + W * 2, OFFSET_Y + i, (char)186, frameColor);
     }
-    gotoxy(OFFSET_X - 1, OFFSET_Y + H);
-    cout << (char)200; for (int i = 0; i < W * 2; i++) cout << (char)205; cout << (char)188;
+    drawCharToBuffer(OFFSET_X - 1, OFFSET_Y + H, (char)200, frameColor);
+    for (int i = 0; i < W * 2; i++) drawCharToBuffer(OFFSET_X + i, OFFSET_Y + H, (char)205, frameColor);
+    drawCharToBuffer(OFFSET_X + W * 2, OFFSET_Y + H, (char)188, frameColor);
 }
 
 void drawStats() {
     int statsX = OFFSET_X + W * 2 + 4;
     int statsY = OFFSET_Y + 1;
-    gotoxy(statsX, statsY - 1); setColor(COLOR_CYAN, COLOR_BLACK); cout << "== TETRIS INFOSYS 5 ==";
-    setColor(COLOR_WHITE, COLOR_BLACK);
-    gotoxy(statsX, statsY + 1); cout << "SCORE: " << score;
-    gotoxy(statsX, statsY + 2); cout << "LEVEL: " << level;
+    writeStringToBuffer(statsX, statsY - 1, "== TETRIS INFOSYS 5 ==", (COLOR_BLACK << 4) | COLOR_CYAN);
+    writeStringToBuffer(statsX, statsY + 1, "SCORE: " + to_string(score), (COLOR_BLACK << 4) | COLOR_WHITE);
+    writeStringToBuffer(statsX, statsY + 2, "LEVEL: " + to_string(level), (COLOR_BLACK << 4) | COLOR_WHITE);
 }
 
 void drawCurrentPiece() {
