@@ -227,7 +227,19 @@ int main() {
                     currentPiece->rotate();
                 }
                 else {
-
+                    // Bắt đầu thử Wall Kick: Thử đẩy sang phải 1 ô
+                    currentPiece->moveRight();
+                    if (canRotate()) {
+                    // Kick thành công! Đẩy sang phải thì xoay được
+                    currentPiece->rotate();
+                    }
+                    else {
+                        // Đẩy sang phải vẫn không xoay được.
+                        // Trả lại vị trí cũ ngay lập tức.
+                        currentPiece->moveLeft();
+                        // Em có thể viết thêm logic: Thử đẩy sang trái (moveLeft) ở đây
+                        // nếu đẩy sang phải thất bại.
+                    }
                 }
             }
             if (c == 's' && canMove(0, 1)) currentPiece->moveDown();
