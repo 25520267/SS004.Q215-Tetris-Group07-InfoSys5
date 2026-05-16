@@ -263,6 +263,9 @@ int main() {
                     cout << " GAME OVER! ";
                     break;
                 }
+                int nextGhostY = TetrisFeatures::getGhostY(currentPiece, board);
+                TetrisFeatures::drawGhost(currentPiece, nextGhostY, OFFSET_X, OFFSET_Y);
+                drawCurrentPiece();
             }
             start = clock();
         }
