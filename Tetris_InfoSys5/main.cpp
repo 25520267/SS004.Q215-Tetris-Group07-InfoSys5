@@ -230,6 +230,11 @@ int main() {
             if (c == 'd' && canMove(1, 0)) currentPiece->moveRight();
             if (c == 'w' && canRotate()) currentPiece->rotate(); // Thêm check va chạm khi xoay
             if (c == 's' && canMove(0, 1)) currentPiece->moveDown();
+            if (c == ' ') {
+                TetrisFeatures::hardDrop(currentPiece, board);
+                // Trừ thẳng thời gian để vòng lặp ép khối khóa lại xuống đáy ngay lập tức
+                start = clock() - speed; 
+            }
             if (c == 'q') break;
             drawCurrentPiece(); 
         }
