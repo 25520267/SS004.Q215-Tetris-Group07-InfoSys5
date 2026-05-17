@@ -306,6 +306,7 @@ int main() {
                 TetrisFeatures::hardDrop(currentPiece, board);
                 // Trừ thẳng thời gian để vòng lặp ép khối khóa lại xuống đáy ngay lập tức
                 start = clock() - speed; 
+                }
                 if (c == 'q') break;
                 int newGhostY = TetrisFeatures::getGhostY(currentPiece, board);
                 TetrisFeatures::drawGhost(currentPiece, newGhostY, OFFSET_X, OFFSET_Y);
