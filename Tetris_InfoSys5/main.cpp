@@ -147,6 +147,9 @@ void drawNextPiece() {
         gotoxy(boxX, boxY + 2 + i);
         setColor(COLOR_WHITE, COLOR_BLACK);
         cout << (char)179; // Viền trái
+        
+        cout << " ";
+
         for (int j = 0; j < 4; j++) {
             char c = nextPiece->getShape(i, j);
             if (c != ' ') {
@@ -158,8 +161,8 @@ void drawNextPiece() {
                 setColor(COLOR_WHITE, COLOR_BLACK);
             }
         }
-        // Padding thêm nếu boxW > 8
-        cout << "  ";
+        
+        cout << " "; 
         cout << (char)179; // Viền phải
     }
 
@@ -256,12 +259,14 @@ int main() {
     system("mode con cols=60 lines=26");
     SetConsoleTitleA("Tetris InfoSys5 - Reworked UI");
 
-    int choice = runMenu();
-    if (choice == 0) {
-        return 0;
-    }
+    bool keepPlaying = true;
+    while (keepPlaying) {
+        int choice = runMenu();
+        if (choice == 0) {
+            break;
+        }
 
-    setup();
+        setup();
 
     // Ap dung Level va Toc do tu Menu
     level = choice;
@@ -352,9 +357,19 @@ int main() {
                 drawNextPiece();                       // Cập nhật khung NEXT
 
                 if (!canMove(0, 0)) {
-                    gotoxy(OFFSET_X + W / 2 - 5, OFFSET_Y + H / 2);
+                    // Xoa mot khoang den o giua man hinh de chu de doc hon
+                    int boxX = OFFSET_X + W - 10;
+                    int boxY = OFFSET_Y + H / 2 - 1;
+                    setColor(COLOR_WHITE, COLOR_BLACK);
+                    gotoxy(boxX, boxY - 1); cout << "                    ";
+                    gotoxy(boxX, boxY);     cout << "                    ";
+                    gotoxy(boxX, boxY + 1); cout << "                    ";
+                    gotoxy(boxX, boxY + 2); cout << "                    ";
+                    
+                    // In chu GAME OVER mau do
+                    gotoxy(boxX + 5, boxY);
                     setColor(COLOR_RED, COLOR_BLACK);
-                    cout << " GAME OVER! ";
+                    cout << "GAME OVER!";
 
                     // --- LUU DIEM CAO NHAT (HIGH SCORE) ---
                     int currentHighScore = 0, currentHighLevel = 1;
@@ -372,7 +387,23 @@ int main() {
                             outFile.close();
                         }
                     }
-                    // --------------------------------------
+
+                    // Hoi nguoi choi co muon choi lai khong?
+                    gotoxy(boxX + 1, boxY + 1);
+                    setColor(COLOR_YELLOW, COLOR_BLACK);
+                    cout << "Choi lai? (Y/N): ";
+
+                    char luachon;
+                    while (true) {
+                        if (_kbhit()) {
+                            luachon = _getch();
+                            break;
+                        }
+                    }
+
+                    if (tolower(luachon) == 'n') {
+                        keepPlaying = false;
+                    }
 
                     break;
                 }
@@ -383,9 +414,11 @@ int main() {
             start = clock();
         }
     }
-    delete currentPiece;
-    currentPiece = nullptr;
-    delete nextPiece;
-    nextPiece = nullptr;
+        delete currentPiece;
+        currentPiece = nullptr;
+        delete nextPiece;
+        nextPiece = nullptr;
+    }
+
     return 0;
 }
