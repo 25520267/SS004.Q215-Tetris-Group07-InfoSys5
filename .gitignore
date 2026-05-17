@@ -11,3 +11,5 @@ Release/
 *.suo
 *.db
 *.opendb
+.vscode/
+highscore.txt

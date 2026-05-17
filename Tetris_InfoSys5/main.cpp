@@ -13,24 +13,24 @@
 using namespace std;
 
 // --- ĐỊNH NGHĨA KÍCH THƯỚC UI ---
-const int W = 12; 
-const int H = 22; 
-const int OFFSET_X = 2; 
-const int OFFSET_Y = 1; 
+const int W = 12;
+const int H = 22;
+const int OFFSET_X = 2;
+const int OFFSET_Y = 1;
 
 char board[H][W] = {};
 Piece *currentPiece = nullptr;
 Piece *nextPiece = nullptr;
 
 int score = 0;
-int level = 1;      
-int linesCleared = 0; 
-int speed = 1000;    
+int level = 1;
+int linesCleared = 0;
+int speed = 1000;
 
 enum TetrisColor {
-    COLOR_BLACK = 0, COLOR_CYAN = 11, COLOR_YELLOW = 14, 
-    COLOR_PURPLE = 13, COLOR_GREEN = 10, COLOR_RED = 12, 
-    COLOR_BLUE = 9, COLOR_ORANGE = 6, COLOR_WHITE = 15, COLOR_GRAY = 8     
+    COLOR_BLACK = 0, COLOR_CYAN = 11, COLOR_YELLOW = 14,
+    COLOR_PURPLE = 13, COLOR_GREEN = 10, COLOR_RED = 12,
+    COLOR_BLUE = 9, COLOR_ORANGE = 6, COLOR_WHITE = 15, COLOR_GRAY = 8
 };
 
 void gotoxy(int x, int y) {
@@ -48,7 +48,7 @@ int getPieceColor(char pType) {
         case 'I': return COLOR_CYAN;   case 'O': return COLOR_YELLOW;
         case 'T': return COLOR_PURPLE; case 'S': return COLOR_GREEN;
         case 'Z': return COLOR_RED;    case 'J': return COLOR_BLUE;
-        case 'L': return COLOR_ORANGE; case '#': return COLOR_WHITE; 
+        case 'L': return COLOR_ORANGE; case '#': return COLOR_WHITE;
         default: return COLOR_WHITE;
     }
 }
@@ -82,8 +82,8 @@ void setup() {
     cursorInfo.bVisible = false;
     SetConsoleCursorInfo(out, &cursorInfo);
 
-    for (int i = 0; i < H; i++) 
-        for (int j = 0; j < W; j++) 
+    for (int i = 0; i < H; i++)
+        for (int j = 0; j < W; j++)
             board[i][j] = ' ';
     score = 0; level = 1; speed = 1000; linesCleared = 0;
     srand((unsigned int)time(0));
@@ -92,11 +92,11 @@ void setup() {
 void drawBlock(int boardX, int boardY, char type) {
     gotoxy(OFFSET_X + boardX * 2, OFFSET_Y + boardY);
     if (type == ' ') {
-        setColor(COLOR_GRAY, COLOR_BLACK); cout << ". "; 
+        setColor(COLOR_GRAY, COLOR_BLACK); cout << ". ";
     } else {
         int color = getPieceColor(type);
-        setColor(COLOR_BLACK, color); cout << "  "; 
-        setColor(COLOR_WHITE, COLOR_BLACK); 
+        setColor(COLOR_BLACK, color); cout << "  ";
+        setColor(COLOR_WHITE, COLOR_BLACK);
     }
 }
 
@@ -105,16 +105,16 @@ void drawOuterFrame() {
     gotoxy(OFFSET_X - 1, OFFSET_Y - 1);
     cout << (char)201; for (int i = 0; i < W * 2; i++) cout << (char)205; cout << (char)187;
     for (int i = 0; i < H; i++) {
-        gotoxy(OFFSET_X - 1, OFFSET_Y + i); cout << (char)186; 
+        gotoxy(OFFSET_X - 1, OFFSET_Y + i); cout << (char)186;
         for (int j = 0; j < W; j++) {
             if (board[i][j] == ' ') { setColor(COLOR_GRAY, COLOR_BLACK); cout << ". "; }
             else drawBlock(j, i, board[i][j]);
         }
         setColor(COLOR_WHITE, COLOR_BLACK);
-        gotoxy(OFFSET_X + W * 2, OFFSET_Y + i); cout << (char)186; 
+        gotoxy(OFFSET_X + W * 2, OFFSET_Y + i); cout << (char)186;
     }
     gotoxy(OFFSET_X - 1, OFFSET_Y + H);
-    cout << (char)200; for (int i = 0; i < W * 2; i++) cout << (char)205; cout << (char)188; 
+    cout << (char)200; for (int i = 0; i < W * 2; i++) cout << (char)205; cout << (char)188;
 }
 
 void drawStats() {
@@ -148,6 +148,9 @@ void drawNextPiece() {
         gotoxy(boxX, boxY + 2 + i);
         setColor(COLOR_WHITE, COLOR_BLACK);
         cout << (char)179; // Viền trái
+        
+        cout << " ";
+
         for (int j = 0; j < 4; j++) {
             char c = nextPiece->getShape(i, j);
             if (c != ' ') {
@@ -159,8 +162,8 @@ void drawNextPiece() {
                 setColor(COLOR_WHITE, COLOR_BLACK);
             }
         }
-        // Padding thêm nếu boxW > 8
-        cout << "  ";
+        
+        cout << " "; 
         cout << (char)179; // Viền phải
     }
 
@@ -176,8 +179,8 @@ void drawCurrentPiece() {
             if (currentPiece->getShape(i, j) != ' ') {
                 int px = currentPiece->getX() + j;
                 int py = currentPiece->getY() + i;
-                if (py >= 0 && py < H && px >= 0 && px < W) 
-                    drawBlock(px, py, currentPiece->getShape(i,j)); 
+                if (py >= 0 && py < H && px >= 0 && px < W)
+                    drawBlock(px, py, currentPiece->getShape(i,j));
             }
         }
     }
@@ -189,8 +192,8 @@ void clearCurrentPiece() {
             if (currentPiece->getShape(i, j) != ' ') {
                 int px = currentPiece->getX() + j;
                 int py = currentPiece->getY() + i;
-                if (py >= 0 && py < H && px >= 0 && px < W) 
-                    drawBlock(px, py, ' '); 
+                if (py >= 0 && py < H && px >= 0 && px < W)
+                    drawBlock(px, py, ' ');
             }
         }
     }
@@ -215,15 +218,15 @@ void block2Board() {
         for (int j = 0; j < 4; j++) {
             if (currentPiece->getShape(i, j) != ' ') {
                 if (currentPiece->getY() + i >= 0)
-                    board[currentPiece->getY() + i][currentPiece->getX() + j] = currentPiece->getShape(i,j); 
+                    board[currentPiece->getY() + i][currentPiece->getX() + j] = currentPiece->getShape(i,j);
             }
         }
     }
 }
 
 void updateBoardUI() {
-    for (int i = 0; i < H; i++) 
-        for (int j = 0; j < W; j++) 
+    for (int i = 0; i < H; i++)
+        for (int j = 0; j < W; j++)
             drawBlock(j, i, board[i][j]);
 }
 
@@ -236,11 +239,11 @@ void checkLines() {
         }
         if (full) {
             combo++;
-            for (int k = i; k > 0; k--) 
-                for (int j = 0; j < W; j++) 
+            for (int k = i; k > 0; k--)
+                for (int j = 0; j < W; j++)
                     board[k][j] = board[k - 1][j];
             for (int j = 0; j < W; j++) board[0][j] = ' ';
-            i++; 
+            i++;
         }
     }
     if (combo > 0) {
@@ -249,7 +252,7 @@ void checkLines() {
         level = (linesCleared / 10) + 1;
         speed = max(100, 1000 - (level - 1) * 100);
         updateBoardUI();
-        drawStats(); 
+        drawStats();
     }
 }
 
@@ -257,13 +260,15 @@ int main() {
     system("mode con cols=60 lines=26");
     SetConsoleTitleA("Tetris InfoSys5 - Reworked UI");
 
-    int choice = runMenu(); 
-    if (choice == 0) {
-        return 0; 
-    }
+    bool keepPlaying = true;
+    while (keepPlaying) {
+        int choice = runMenu();
+        if (choice == 0) {
+            break;
+        }
 
-    setup();
-    
+        setup();
+
     // Ap dung Level va Toc do tu Menu
     level = choice;
     linesCleared = (level - 1) * 10; // Dong bo so dong da xoa voi level
@@ -290,23 +295,42 @@ int main() {
             clearCurrentPiece();
             if (c == 224 || c == 0) { // Nếu bấm Phím Mũi Tên, hệ thống sẽ gửi 2 mã
                 c = _getch(); // Đọc mã thứ 2 để biết hướng
-                clearCurrentPiece(); 
-                if (c == 75 && canMove(-1, 0)) currentPiece->moveLeft();  
-                if (c == 77 && canMove(1, 0)) currentPiece->moveRight();  
-                if (c == 72 && canRotate()) currentPiece->rotate();       
-                if (c == 80 && canMove(0, 1)) currentPiece->moveDown();   
-                drawCurrentPiece(); 
+                clearCurrentPiece();
+                if (c == 75 && canMove(-1, 0)) currentPiece->moveLeft();
+                if (c == 77 && canMove(1, 0)) currentPiece->moveRight();
+                if (c == 72 && canRotate()) currentPiece->rotate();
+                if (c == 80 && canMove(0, 1)) currentPiece->moveDown();
+                drawCurrentPiece();
             } else {
-                c = tolower(c); 
-                clearCurrentPiece(); 
+                c = tolower(c);
+                clearCurrentPiece();
                 if (c == 'a' && canMove(-1, 0)) currentPiece->moveLeft();
                 if (c == 'd' && canMove(1, 0)) currentPiece->moveRight();
-                if (c == 'w' && canRotate()) currentPiece->rotate(); 
+                if (c == 'w') {
+                    if (canRotate()) {
+                    // Trường hợp lý tưởng: Xoay bình thường không vướng gì
+                    currentPiece->rotate();
+                    }
+                    else {
+                        // Bắt đầu thử Wall Kick: Thử đẩy sang phải 1 ô
+                        currentPiece->moveRight();
+
+                        if (canRotate()) {
+                            // Kick thành công! Đẩy sang phải thì xoay được
+                            currentPiece->rotate();
+                        }
+                        else {
+                            // Đẩy sang phải vẫn không xoay được.
+                            // Trả lại vị trí cũ ngay lập tức.
+                            currentPiece->moveLeft();
+                        }
+                    }
+                }
                 if (c == 's' && canMove(0, 1)) currentPiece->moveDown();
                 if (c == ' ') {
                 TetrisFeatures::hardDrop(currentPiece, board);
                 // Trừ thẳng thời gian để vòng lặp ép khối khóa lại xuống đáy ngay lập tức
-                start = clock() - speed; 
+                start = clock() - speed;
                 }
                 if (c == 'c' || c == 'h') {
                     holdCurrentPiece(currentPiece, nextPiece);
@@ -319,7 +343,7 @@ int main() {
                 if (c == 'q') break;
                 int newGhostY = TetrisFeatures::getGhostY(currentPiece, board);
                 TetrisFeatures::drawGhost(currentPiece, newGhostY, OFFSET_X, OFFSET_Y);
-                drawCurrentPiece(); 
+                drawCurrentPiece();
             }
         }
 
@@ -333,9 +357,9 @@ int main() {
                 TetrisFeatures::drawGhost(currentPiece, newGhostYTimer, OFFSET_X, OFFSET_Y);
                 drawCurrentPiece();
             } else {
-                drawCurrentPiece(); 
-                block2Board(); 
-                checkLines(); 
+                drawCurrentPiece();
+                block2Board();
+                checkLines();
                 delete currentPiece;
                 currentPiece = nextPiece;             // Khối kế tiếp trở thành khối hiện tại
                 nextPiece = getNextPieceFromBag();  // Lấy khối mới từ túi 7-bag
@@ -344,10 +368,20 @@ int main() {
                 drawHoldPiece();
 
                 if (!canMove(0, 0)) {
-                    gotoxy(OFFSET_X + W / 2 - 5, OFFSET_Y + H / 2);
-                    setColor(COLOR_RED, COLOR_BLACK);
-                    cout << " GAME OVER! ";
+                    // Xoa mot khoang den o giua man hinh de chu de doc hon
+                    int boxX = OFFSET_X + W - 10;
+                    int boxY = OFFSET_Y + H / 2 - 1;
+                    setColor(COLOR_WHITE, COLOR_BLACK);
+                    gotoxy(boxX, boxY - 1); cout << "                    ";
+                    gotoxy(boxX, boxY);     cout << "                    ";
+                    gotoxy(boxX, boxY + 1); cout << "                    ";
+                    gotoxy(boxX, boxY + 2); cout << "                    ";
                     
+                    // In chu GAME OVER mau do
+                    gotoxy(boxX + 5, boxY);
+                    setColor(COLOR_RED, COLOR_BLACK);
+                    cout << "GAME OVER!";
+
                     // --- LUU DIEM CAO NHAT (HIGH SCORE) ---
                     int currentHighScore = 0, currentHighLevel = 1;
                     ifstream inFile("highscore.txt");
@@ -355,7 +389,7 @@ int main() {
                         inFile >> currentHighScore >> currentHighLevel;
                         inFile.close();
                     }
-                    
+
                     // Neu diem hien tai cao hon diem ky luc, thi luu de file
                     if (score > currentHighScore) {
                         ofstream outFile("highscore.txt");
@@ -364,7 +398,23 @@ int main() {
                             outFile.close();
                         }
                     }
-                    // --------------------------------------
+
+                    // Hoi nguoi choi co muon choi lai khong?
+                    gotoxy(boxX + 1, boxY + 1);
+                    setColor(COLOR_YELLOW, COLOR_BLACK);
+                    cout << "Choi lai? (Y/N): ";
+
+                    char luachon;
+                    while (true) {
+                        if (_kbhit()) {
+                            luachon = _getch();
+                            break;
+                        }
+                    }
+
+                    if (tolower(luachon) == 'n') {
+                        keepPlaying = false;
+                    }
 
                     break;
                 }
@@ -375,11 +425,20 @@ int main() {
             start = clock();
         }
     }
+ feature/hold-piece
     delete currentPiece;
     currentPiece = nullptr;
     delete nextPiece;
     nextPiece = nullptr;
     delete holdPiece;
     holdPiece = nullptr;
+
+        delete currentPiece;
+        currentPiece = nullptr;
+        delete nextPiece;
+        nextPiece = nullptr;
+    }
+
+ main
     return 0;
 }
