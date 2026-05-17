@@ -12,3 +12,4 @@ Release/
 *.db
 *.opendb
 .vscode/
+highscore.txt
