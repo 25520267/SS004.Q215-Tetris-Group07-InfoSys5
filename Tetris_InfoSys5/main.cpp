@@ -7,6 +7,7 @@
 #include <string>
 #include "Menu.h"
 #include "Blocks.h"
+#include "ghost-and-harddrop.h"
 
 using namespace std;
 
@@ -18,6 +19,7 @@ const int OFFSET_Y = 1;
 
 char board[H][W] = {};
 Piece *currentPiece = nullptr;
+Piece *nextPiece = nullptr;
 
 int score = 0;
 int level = 1;      
@@ -119,8 +121,52 @@ void drawStats() {
     int statsY = OFFSET_Y + 1;
     gotoxy(statsX, statsY - 1); setColor(COLOR_CYAN, COLOR_BLACK); cout << "== TETRIS INFOSYS 5 ==";
     setColor(COLOR_WHITE, COLOR_BLACK);
-    gotoxy(statsX, statsY + 1); cout << "SCORE: " << score;
-    gotoxy(statsX, statsY + 2); cout << "LEVEL: " << level;
+    gotoxy(statsX, statsY + 1); cout << "SCORE: " << score << "    ";
+    gotoxy(statsX, statsY + 2); cout << "LEVEL: " << level << "    ";
+}
+
+// --- Vẽ khung NEXT PIECE ở góc phải ---
+void drawNextPiece() {
+    if (!nextPiece) return;
+
+    int boxX = OFFSET_X + W * 2 + 4; // Vị trí X của khung
+    int boxY = OFFSET_Y + 5;          // Vị trí Y (bên dưới Stats)
+    int boxW = 10;                     // Chiều rộng khung (5 ô * 2 ký tự)
+
+    // Tiêu đề
+    setColor(COLOR_CYAN, COLOR_BLACK);
+    gotoxy(boxX, boxY); cout << "  NEXT";
+
+    // Viền trên
+    setColor(COLOR_WHITE, COLOR_BLACK);
+    gotoxy(boxX, boxY + 1);
+    cout << (char)218; for (int i = 0; i < boxW; i++) cout << (char)196; cout << (char)191;
+
+    // Nội dung 4 dòng (vẽ shape của nextPiece)
+    for (int i = 0; i < 4; i++) {
+        gotoxy(boxX, boxY + 2 + i);
+        setColor(COLOR_WHITE, COLOR_BLACK);
+        cout << (char)179; // Viền trái
+        for (int j = 0; j < 4; j++) {
+            char c = nextPiece->getShape(i, j);
+            if (c != ' ') {
+                int color = getPieceColor(c);
+                setColor(COLOR_BLACK, color); cout << "  ";
+                setColor(COLOR_WHITE, COLOR_BLACK);
+            } else {
+                setColor(COLOR_BLACK, COLOR_BLACK); cout << "  ";
+                setColor(COLOR_WHITE, COLOR_BLACK);
+            }
+        }
+        // Padding thêm nếu boxW > 8
+        cout << "  ";
+        cout << (char)179; // Viền phải
+    }
+
+    // Viền dưới
+    setColor(COLOR_WHITE, COLOR_BLACK);
+    gotoxy(boxX, boxY + 6);
+    cout << (char)192; for (int i = 0; i < boxW; i++) cout << (char)196; cout << (char)217;
 }
 
 void drawCurrentPiece() {
@@ -224,12 +270,23 @@ int main() {
     system("cls");
     drawOuterFrame();
     drawStats();
-        currentPiece = createRandomPiece();
+    currentPiece = getNextPieceFromBag();
+    nextPiece = getNextPieceFromBag();
+
+    int initGhostY = TetrisFeatures::getGhostY(currentPiece, board);
+    TetrisFeatures::drawGhost(currentPiece, initGhostY, OFFSET_X, OFFSET_Y);
+    drawCurrentPiece();
+
+    // Khởi tạo khối đầu tiên và khối kế tiếp từ túi 7-bag
+    drawNextPiece();
 
     clock_t start = clock();
     while (1) {
         if (_kbhit()) {
             int c = _getch();
+            int oldGhostY = TetrisFeatures::getGhostY(currentPiece, board);
+            TetrisFeatures::clearGhost(currentPiece, oldGhostY, OFFSET_X, OFFSET_Y);
+            clearCurrentPiece();
             if (c == 224 || c == 0) { // Nếu bấm Phím Mũi Tên, hệ thống sẽ gửi 2 mã
                 c = _getch(); // Đọc mã thứ 2 để biết hướng
                 clearCurrentPiece(); 
@@ -245,22 +302,34 @@ int main() {
                 if (c == 'd' && canMove(1, 0)) currentPiece->moveRight();
                 if (c == 'w' && canRotate()) currentPiece->rotate(); 
                 if (c == 's' && canMove(0, 1)) currentPiece->moveDown();
+                if (c == ' ') {
+                TetrisFeatures::hardDrop(currentPiece, board);
+                // Trừ thẳng thời gian để vòng lặp ép khối khóa lại xuống đáy ngay lập tức
+                start = clock() - speed; 
                 if (c == 'q') break;
+                int newGhostY = TetrisFeatures::getGhostY(currentPiece, board);
+                TetrisFeatures::drawGhost(currentPiece, newGhostY, OFFSET_X, OFFSET_Y);
                 drawCurrentPiece(); 
             }
         }
 
         if (clock() - start > speed) {
+            int oldGhostYTimer = TetrisFeatures::getGhostY(currentPiece, board);
+            TetrisFeatures::clearGhost(currentPiece, oldGhostYTimer, OFFSET_X, OFFSET_Y);
             clearCurrentPiece();
             if (canMove(0, 1)) {
                 currentPiece->moveDown();
+                int newGhostYTimer = TetrisFeatures::getGhostY(currentPiece, board);
+                TetrisFeatures::drawGhost(currentPiece, newGhostYTimer, OFFSET_X, OFFSET_Y);
                 drawCurrentPiece();
             } else {
                 drawCurrentPiece(); 
                 block2Board(); 
                 checkLines(); 
                 delete currentPiece;
-                currentPiece = createRandomPiece(); 
+                currentPiece = nextPiece;             // Khối kế tiếp trở thành khối hiện tại
+                nextPiece = getNextPieceFromBag();     // Lấy khối mới từ túi 7-bag
+                drawNextPiece();                       // Cập nhật khung NEXT
 
                 if (!canMove(0, 0)) {
                     gotoxy(OFFSET_X + W / 2 - 5, OFFSET_Y + H / 2);
@@ -287,11 +356,16 @@ int main() {
 
                     break;
                 }
+                int nextGhostY = TetrisFeatures::getGhostY(currentPiece, board);
+                TetrisFeatures::drawGhost(currentPiece, nextGhostY, OFFSET_X, OFFSET_Y);
+                drawCurrentPiece();
             }
             start = clock();
         }
     }
     delete currentPiece;
     currentPiece = nullptr;
+    delete nextPiece;
+    nextPiece = nullptr;
     return 0;
 }
