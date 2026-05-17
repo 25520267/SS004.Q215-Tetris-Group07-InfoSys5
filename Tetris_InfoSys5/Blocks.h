@@ -1,6 +1,7 @@
 #pragma once
 #include "Piece.h"
 #include <cstdlib>
+#include <algorithm>
 
 inline void rotateMatrix(char shape[4][4]) {
     char temp[4][4];
@@ -151,9 +152,11 @@ public:
         rotateMatrix(shape);
     }
 };
-inline Piece* createRandomPiece() {
-    int type = rand() % 7;
+// --- Hệ thống Túi 7 khối (7-bag Randomizer) ---
+// Xáo trộn 7 loại khối, nhả ra từng cái một.
+// Khi hết túi thì xáo trộn lại, tránh ra cùng 1 loại liên tiếp nhiều lần.
 
+inline Piece* createPieceByType(int type) {
     switch (type) {
     case 0: return new PieceT();
     case 1: return new PieceL();
@@ -164,4 +167,17 @@ inline Piece* createRandomPiece() {
     case 6: return new PieceZ();
     default: return new PieceT();
     }
+}
+
+inline Piece* getNextPieceFromBag() {
+    static int bag[7] = { 0, 1, 2, 3, 4, 5, 6 };
+    static int bagIndex = 7; // Bắt đầu = 7 để xáo trộn ngay lần đầu
+
+    if (bagIndex >= 7) {
+        // Xáo trộn túi bằng Fisher-Yates (std::random_shuffle)
+        std::random_shuffle(bag, bag + 7);
+        bagIndex = 0;
+    }
+
+    return createPieceByType(bag[bagIndex++]);
 }
