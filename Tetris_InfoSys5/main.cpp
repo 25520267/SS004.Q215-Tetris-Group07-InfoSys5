@@ -7,6 +7,7 @@
 #include <string>
 #include "Menu.h"
 #include "Blocks.h"
+#include "ghost-and-harddrop.h"
 
 using namespace std;
 
@@ -269,16 +270,23 @@ int main() {
     system("cls");
     drawOuterFrame();
     drawStats();
-
-    // Khởi tạo khối đầu tiên và khối kế tiếp từ túi 7-bag
     currentPiece = getNextPieceFromBag();
     nextPiece = getNextPieceFromBag();
+
+    int initGhostY = TetrisFeatures::getGhostY(currentPiece, board);
+    TetrisFeatures::drawGhost(currentPiece, initGhostY, OFFSET_X, OFFSET_Y);
+    drawCurrentPiece();
+
+    // Khởi tạo khối đầu tiên và khối kế tiếp từ túi 7-bag
     drawNextPiece();
 
     clock_t start = clock();
     while (1) {
         if (_kbhit()) {
             int c = _getch();
+            int oldGhostY = TetrisFeatures::getGhostY(currentPiece, board);
+            TetrisFeatures::clearGhost(currentPiece, oldGhostY, OFFSET_X, OFFSET_Y);
+            clearCurrentPiece();
             if (c == 224 || c == 0) { // Nếu bấm Phím Mũi Tên, hệ thống sẽ gửi 2 mã
                 c = _getch(); // Đọc mã thứ 2 để biết hướng
                 clearCurrentPiece(); 
@@ -294,15 +302,25 @@ int main() {
                 if (c == 'd' && canMove(1, 0)) currentPiece->moveRight();
                 if (c == 'w' && canRotate()) currentPiece->rotate(); 
                 if (c == 's' && canMove(0, 1)) currentPiece->moveDown();
+                if (c == ' ') {
+                TetrisFeatures::hardDrop(currentPiece, board);
+                // Trừ thẳng thời gian để vòng lặp ép khối khóa lại xuống đáy ngay lập tức
+                start = clock() - speed; 
                 if (c == 'q') break;
+                int newGhostY = TetrisFeatures::getGhostY(currentPiece, board);
+                TetrisFeatures::drawGhost(currentPiece, newGhostY, OFFSET_X, OFFSET_Y);
                 drawCurrentPiece(); 
             }
         }
 
         if (clock() - start > speed) {
+            int oldGhostYTimer = TetrisFeatures::getGhostY(currentPiece, board);
+            TetrisFeatures::clearGhost(currentPiece, oldGhostYTimer, OFFSET_X, OFFSET_Y);
             clearCurrentPiece();
             if (canMove(0, 1)) {
                 currentPiece->moveDown();
+                int newGhostYTimer = TetrisFeatures::getGhostY(currentPiece, board);
+                TetrisFeatures::drawGhost(currentPiece, newGhostYTimer, OFFSET_X, OFFSET_Y);
                 drawCurrentPiece();
             } else {
                 drawCurrentPiece(); 
@@ -338,6 +356,9 @@ int main() {
 
                     break;
                 }
+                int nextGhostY = TetrisFeatures::getGhostY(currentPiece, board);
+                TetrisFeatures::drawGhost(currentPiece, nextGhostY, OFFSET_X, OFFSET_Y);
+                drawCurrentPiece();
             }
             start = clock();
         }
