@@ -6,7 +6,7 @@
 #include <time.h>
 #include <string>
 #include "Blocks.h"
-
+#include "HoldPiece.h"
 using namespace std;
 
 // --- ĐỊNH NGHĨA KÍCH THƯỚC UI ---
@@ -17,6 +17,7 @@ const int OFFSET_Y = 1;
 
 char board[H][W] = {};
 Piece *currentPiece = nullptr;
+Piece* nextPiece = nullptr;
 
 int score = 0;
 int level = 1;      
@@ -213,6 +214,7 @@ int main() {
     drawOuterFrame();
     drawStats();
         currentPiece = createRandomPiece();
+        nextPiece = createRandomPiece();
 
     clock_t start = clock();
     while (1) {
@@ -223,6 +225,10 @@ int main() {
             if (c == 'd' && canMove(1, 0)) currentPiece->moveRight();
             if (c == 'w' && canRotate()) currentPiece->rotate(); // Thêm check va chạm khi xoay
             if (c == 's' && canMove(0, 1)) currentPiece->moveDown();
+            if ((c == 'c' || c == 'h')) {
+                holdCurrentPiece(currentPiece, nextPiece);
+                drawHoldPiece();
+            }
             if (c == 'q') break;
             drawCurrentPiece(); 
         }
@@ -237,7 +243,9 @@ int main() {
                 block2Board(); 
                 checkLines(); 
                 delete currentPiece;
-                currentPiece = createRandomPiece(); 
+                currentPiece = nextPiece;
+                nextPiece = createRandomPiece();
+                resetHoldPiece();
 
                 if (!canMove(0, 0)) {
                     gotoxy(OFFSET_X + W / 2 - 5, OFFSET_Y + H / 2);
@@ -250,6 +258,8 @@ int main() {
         }
     }
     delete currentPiece;
+    delete nextPiece;
     currentPiece = nullptr;
+    nextPiece = nullptr;
     return 0;
 }
