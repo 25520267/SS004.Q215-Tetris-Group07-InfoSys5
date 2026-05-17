@@ -17,6 +17,20 @@ Một phiên bản làm lại của tựa game xếp hình Tetris huyền thoạ
 * `Space` : Hard Drop (Thả rơi ngay lập tức)
 * `C` : Hold Piece (Cất khối / Lấy khối đã cất)
 * `Q` : Thoát game (Exit)
+
+## 💻 Yêu cầu hệ thống (Prerequisites)
+* **Hệ điều hành:** Yêu cầu Windows (do game sử dụng các thư viện đặc thù của Windows như `<windows.h>`, `<conio.h>`).
+* **Trình biên dịch:** Hỗ trợ bất kỳ trình biên dịch C++ nào (MinGW/GCC) hoặc có thể chạy trực tiếp thông qua Visual Studio.
+
+## 🚀 Hướng dẫn Cài đặt & Chạy game
+1. **Sử dụng Visual Studio (Khuyên dùng):**
+   - Mở file `Tetris_InfoSys5.slnx` hoặc thư mục dự án bằng Visual Studio.
+   - Nhấn `F5` hoặc nút **Local Windows Debugger** để biên dịch và chạy game.
+2. **Sử dụng Terminal / MinGW:**
+   - Mở Terminal (Command Prompt / PowerShell) tại thư mục `Tetris_InfoSys5`.
+   - Gõ lệnh biên dịch: `g++ main.cpp -o tetris.exe`
+   - Chạy game: `.\tetris.exe`
+
 ## 👥 Danh sách thành viên nhóm
 
 | STT | Họ và Tên | MSSV |
