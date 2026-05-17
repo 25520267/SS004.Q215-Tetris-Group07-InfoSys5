@@ -8,6 +8,7 @@
 #include "Menu.h"
 #include "Blocks.h"
 #include "ghost-and-harddrop.h"
+#include "HoldPiece.h"
 
 using namespace std;
 
@@ -284,7 +285,7 @@ int main() {
 
     // Khởi tạo khối đầu tiên và khối kế tiếp từ túi 7-bag
     drawNextPiece();
-
+    drawHoldPiece();
     clock_t start = clock();
     while (1) {
         if (_kbhit()) {
@@ -331,6 +332,14 @@ int main() {
                 // Trừ thẳng thời gian để vòng lặp ép khối khóa lại xuống đáy ngay lập tức
                 start = clock() - speed;
                 }
+                if (c == 'c' || c == 'h') {
+                    holdCurrentPiece(currentPiece, nextPiece);
+                    int holdGhostY = TetrisFeatures::getGhostY(currentPiece, board);
+                    TetrisFeatures::drawGhost(currentPiece, holdGhostY, OFFSET_X, OFFSET_Y);
+                    drawCurrentPiece();
+                    drawNextPiece();
+                    drawHoldPiece();
+                }
                 if (c == 'q') break;
                 int newGhostY = TetrisFeatures::getGhostY(currentPiece, board);
                 TetrisFeatures::drawGhost(currentPiece, newGhostY, OFFSET_X, OFFSET_Y);
@@ -353,8 +362,10 @@ int main() {
                 checkLines();
                 delete currentPiece;
                 currentPiece = nextPiece;             // Khối kế tiếp trở thành khối hiện tại
-                nextPiece = getNextPieceFromBag();     // Lấy khối mới từ túi 7-bag
+                nextPiece = getNextPieceFromBag();  // Lấy khối mới từ túi 7-bag
+                resetHoldPiece();
                 drawNextPiece();                       // Cập nhật khung NEXT
+                drawHoldPiece();
 
                 if (!canMove(0, 0)) {
                     // Xoa mot khoang den o giua man hinh de chu de doc hon
@@ -414,11 +425,20 @@ int main() {
             start = clock();
         }
     }
+ feature/hold-piece
+    delete currentPiece;
+    currentPiece = nullptr;
+    delete nextPiece;
+    nextPiece = nullptr;
+    delete holdPiece;
+    holdPiece = nullptr;
+
         delete currentPiece;
         currentPiece = nullptr;
         delete nextPiece;
         nextPiece = nullptr;
     }
 
+ main
     return 0;
 }

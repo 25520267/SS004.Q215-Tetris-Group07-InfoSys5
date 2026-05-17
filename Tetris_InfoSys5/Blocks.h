@@ -2,7 +2,8 @@
 #include "Piece.h"
 #include <cstdlib>
 #include <algorithm>
-
+#include <random>
+#include <ctime>
 inline void rotateMatrix(char shape[4][4]) {
     char temp[4][4];
 
@@ -175,7 +176,8 @@ inline Piece* getNextPieceFromBag() {
 
     if (bagIndex >= 7) {
         // Xáo trộn túi bằng Fisher-Yates (std::random_shuffle)
-        std::random_shuffle(bag, bag + 7);
+        static std::default_random_engine engine((unsigned int)time(0));
+        std::shuffle(bag, bag + 7, engine);
         bagIndex = 0;
     }
 

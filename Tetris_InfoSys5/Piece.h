@@ -17,7 +17,10 @@ public:
     int getX() { return x; }
     int getY() { return y; }
     char getShape(int i, int j) { return shape[i][j]; }
-
+    void setPosition(int newX, int newY) {
+        x = newX;
+        y = newY;
+    }
     void moveLeft() { x--; }
     void moveRight() { x++; }
     void moveDown() { y++; }
