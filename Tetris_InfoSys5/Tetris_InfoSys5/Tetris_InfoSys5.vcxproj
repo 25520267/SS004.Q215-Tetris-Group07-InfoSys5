@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Blocks.h" />
+    <ClInclude Include="..\HoldPiece.h" />
     <ClInclude Include="..\Piece.h" />
     <ClInclude Include="..\PieceO.h" />
     <ClInclude Include="..\PieceI.h" />
